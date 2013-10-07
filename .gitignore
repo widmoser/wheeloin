@@ -1,0 +1,6 @@
+Test/Debug
+
+*.o
+*.suo
+*.sdf
+*.opensdf

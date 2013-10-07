@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <cmath>
+#include "math.h"
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -177,7 +177,7 @@ int main(int argc, char** argv)
         amplitude *= (1.0 - state.stick->axis[2])*2.0 + 1.0;
         
         StkFloat rawnote = (state.stick->axis[0] + 1.0)*0.5*(maxNote - minNote) + minNote;
-        int note = round(rawnote);
+		int note = (int)(rawnote);
         //StkFloat frequency = getFrequency(round(note));
         
         
