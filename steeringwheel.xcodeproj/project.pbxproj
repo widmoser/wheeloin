@@ -7,18 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D11E0887178859CF002B348A /* Test.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D11E0886178859CF002B348A /* Test.1 */; };
 		D11E08931788B013002B348A /* liballegro_main.5.0.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E08921788B013002B348A /* liballegro_main.5.0.10.dylib */; };
 		D11E08951788B0AB002B348A /* liballegro.5.0.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E08941788B0AB002B348A /* liballegro.5.0.10.dylib */; };
 		D11E08971788B8C9002B348A /* liballegro_font.5.0.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E08961788B8C9002B348A /* liballegro_font.5.0.10.dylib */; };
 		D11E08991788BCE6002B348A /* liballegro_ttf.5.0.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E08981788BCE6002B348A /* liballegro_ttf.5.0.10.dylib */; };
 		D11E089D1788BFF3002B348A /* liballegro_audio.5.0.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E089C1788BFF3002B348A /* liballegro_audio.5.0.10.dylib */; };
 		D11E089F1788C02A002B348A /* liballegro_primitives.5.0.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E089E1788C02A002B348A /* liballegro_primitives.5.0.10.dylib */; };
-		D11E08A71788CDA2002B348A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D11E0884178859CF002B348A /* main.cpp */; };
 		D11E08A91788CFC3002B348A /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E08A81788CFC3002B348A /* CoreAudio.framework */; };
 		D11E08AB1788D08C002B348A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E08AA1788D08C002B348A /* CoreFoundation.framework */; };
 		D11E0AD61788D59E002B348A /* libstk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D11E08A51788CD8E002B348A /* libstk.a */; };
-		D11E0AD91788D5C9002B348A /* VolumeSine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D11E0AD71788D5C9002B348A /* VolumeSine.cpp */; };
+		D1A29595180C649A00E84E5E /* CustomSampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A2958A180C649A00E84E5E /* CustomSampler.cpp */; };
+		D1A29596180C649A00E84E5E /* FileWave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A2958C180C649A00E84E5E /* FileWave.cpp */; };
+		D1A29597180C649A00E84E5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A2958E180C649A00E84E5E /* main.cpp */; };
+		D1A29598180C649A00E84E5E /* Overdrive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A2958F180C649A00E84E5E /* Overdrive.cpp */; };
+		D1A29599180C649A00E84E5E /* SampleInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A29591180C649A00E84E5E /* SampleInstrument.cpp */; };
+		D1A2959A180C649A00E84E5E /* VolumeSine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A29593180C649A00E84E5E /* VolumeSine.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,7 +31,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				D11E0887178859CF002B348A /* Test.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -36,8 +38,6 @@
 
 /* Begin PBXFileReference section */
 		D11E0881178859CF002B348A /* steeringwheel */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = steeringwheel; sourceTree = BUILT_PRODUCTS_DIR; };
-		D11E0884178859CF002B348A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		D11E0886178859CF002B348A /* Test.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Test.1; sourceTree = "<group>"; };
 		D11E088F1788A3EF002B348A /* libhidapi.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhidapi.0.dylib; path = ../../../../../../../usr/local/lib/libhidapi.0.dylib; sourceTree = "<group>"; };
 		D11E08921788B013002B348A /* liballegro_main.5.0.10.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liballegro_main.5.0.10.dylib; path = ../../../../../../../usr/local/lib/liballegro_main.5.0.10.dylib; sourceTree = "<group>"; };
 		D11E08941788B0AB002B348A /* liballegro.5.0.10.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liballegro.5.0.10.dylib; path = ../../../../../../../usr/local/lib/liballegro.5.0.10.dylib; sourceTree = "<group>"; };
@@ -49,8 +49,17 @@
 		D11E08A51788CD8E002B348A /* libstk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstk.a; path = "../stk-4.4.4/src/libstk.a"; sourceTree = "<group>"; };
 		D11E08A81788CFC3002B348A /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		D11E08AA1788D08C002B348A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		D11E0AD71788D5C9002B348A /* VolumeSine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeSine.cpp; sourceTree = "<group>"; };
-		D11E0AD81788D5C9002B348A /* VolumeSine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolumeSine.h; sourceTree = "<group>"; };
+		D1A2958A180C649A00E84E5E /* CustomSampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CustomSampler.cpp; path = src/CustomSampler.cpp; sourceTree = SOURCE_ROOT; };
+		D1A2958B180C649A00E84E5E /* CustomSampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomSampler.h; path = src/CustomSampler.h; sourceTree = SOURCE_ROOT; };
+		D1A2958C180C649A00E84E5E /* FileWave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileWave.cpp; path = src/FileWave.cpp; sourceTree = SOURCE_ROOT; };
+		D1A2958D180C649A00E84E5E /* FileWave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileWave.h; path = src/FileWave.h; sourceTree = SOURCE_ROOT; };
+		D1A2958E180C649A00E84E5E /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
+		D1A2958F180C649A00E84E5E /* Overdrive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Overdrive.cpp; path = src/Overdrive.cpp; sourceTree = SOURCE_ROOT; };
+		D1A29590180C649A00E84E5E /* Overdrive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Overdrive.h; path = src/Overdrive.h; sourceTree = SOURCE_ROOT; };
+		D1A29591180C649A00E84E5E /* SampleInstrument.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SampleInstrument.cpp; path = src/SampleInstrument.cpp; sourceTree = SOURCE_ROOT; };
+		D1A29592180C649A00E84E5E /* SampleInstrument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SampleInstrument.h; path = src/SampleInstrument.h; sourceTree = SOURCE_ROOT; };
+		D1A29593180C649A00E84E5E /* VolumeSine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeSine.cpp; path = src/VolumeSine.cpp; sourceTree = SOURCE_ROOT; };
+		D1A29594180C649A00E84E5E /* VolumeSine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VolumeSine.h; path = src/VolumeSine.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,10 +112,17 @@
 		D11E0883178859CF002B348A /* src */ = {
 			isa = PBXGroup;
 			children = (
-				D11E0884178859CF002B348A /* main.cpp */,
-				D11E0886178859CF002B348A /* Test.1 */,
-				D11E0AD71788D5C9002B348A /* VolumeSine.cpp */,
-				D11E0AD81788D5C9002B348A /* VolumeSine.h */,
+				D1A2958A180C649A00E84E5E /* CustomSampler.cpp */,
+				D1A2958B180C649A00E84E5E /* CustomSampler.h */,
+				D1A2958C180C649A00E84E5E /* FileWave.cpp */,
+				D1A2958D180C649A00E84E5E /* FileWave.h */,
+				D1A2958E180C649A00E84E5E /* main.cpp */,
+				D1A2958F180C649A00E84E5E /* Overdrive.cpp */,
+				D1A29590180C649A00E84E5E /* Overdrive.h */,
+				D1A29591180C649A00E84E5E /* SampleInstrument.cpp */,
+				D1A29592180C649A00E84E5E /* SampleInstrument.h */,
+				D1A29593180C649A00E84E5E /* VolumeSine.cpp */,
+				D1A29594180C649A00E84E5E /* VolumeSine.h */,
 			);
 			name = src;
 			path = Test;
@@ -163,8 +179,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D11E08A71788CDA2002B348A /* main.cpp in Sources */,
-				D11E0AD91788D5C9002B348A /* VolumeSine.cpp in Sources */,
+				D1A29595180C649A00E84E5E /* CustomSampler.cpp in Sources */,
+				D1A29596180C649A00E84E5E /* FileWave.cpp in Sources */,
+				D1A29597180C649A00E84E5E /* main.cpp in Sources */,
+				D1A29598180C649A00E84E5E /* Overdrive.cpp in Sources */,
+				D1A29599180C649A00E84E5E /* SampleInstrument.cpp in Sources */,
+				D1A2959A180C649A00E84E5E /* VolumeSine.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,6 +251,12 @@
 		D11E088B178859CF002B348A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(LOCAL_LIBRARY_DIR)\"",
+					"\"$(SRCROOT)/../../../../../Library\"",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -258,6 +284,12 @@
 		D11E088C178859CF002B348A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(LOCAL_LIBRARY_DIR)\"",
+					"\"$(SRCROOT)/../../../../../Library\"",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = (
 					../hidapi/hidapi,
