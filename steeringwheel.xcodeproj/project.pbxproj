@@ -22,6 +22,7 @@
 		D1A29598180C649A00E84E5E /* Overdrive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A2958F180C649A00E84E5E /* Overdrive.cpp */; };
 		D1A29599180C649A00E84E5E /* SampleInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A29591180C649A00E84E5E /* SampleInstrument.cpp */; };
 		D1A2959A180C649A00E84E5E /* VolumeSine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1A29593180C649A00E84E5E /* VolumeSine.cpp */; };
+		D1A2959C180C68A800E84E5E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1A2959B180C68A800E84E5E /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -60,6 +61,8 @@
 		D1A29592180C649A00E84E5E /* SampleInstrument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SampleInstrument.h; path = src/SampleInstrument.h; sourceTree = SOURCE_ROOT; };
 		D1A29593180C649A00E84E5E /* VolumeSine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VolumeSine.cpp; path = src/VolumeSine.cpp; sourceTree = SOURCE_ROOT; };
 		D1A29594180C649A00E84E5E /* VolumeSine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VolumeSine.h; path = src/VolumeSine.h; sourceTree = SOURCE_ROOT; };
+		D1A2959B180C68A800E84E5E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		D1A2959D180C74BC00E84E5E /* test.score */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test.score; path = src/test.score; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1A2959C180C68A800E84E5E /* OpenGL.framework in Frameworks */,
 				D11E0AD61788D59E002B348A /* libstk.a in Frameworks */,
 				D11E08AB1788D08C002B348A /* CoreFoundation.framework in Frameworks */,
 				D11E08A91788CFC3002B348A /* CoreAudio.framework in Frameworks */,
@@ -85,6 +89,7 @@
 		D11E0878178859CE002B348A = {
 			isa = PBXGroup;
 			children = (
+				D1A2959B180C68A800E84E5E /* OpenGL.framework */,
 				D11E08AA1788D08C002B348A /* CoreFoundation.framework */,
 				D11E08A81788CFC3002B348A /* CoreAudio.framework */,
 				D11E08A51788CD8E002B348A /* libstk.a */,
@@ -123,6 +128,7 @@
 				D1A29592180C649A00E84E5E /* SampleInstrument.h */,
 				D1A29593180C649A00E84E5E /* VolumeSine.cpp */,
 				D1A29594180C649A00E84E5E /* VolumeSine.h */,
+				D1A2959D180C74BC00E84E5E /* test.score */,
 			);
 			name = src;
 			path = Test;

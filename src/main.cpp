@@ -11,6 +11,9 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+
 #include <Saxofony.h>
 #include <HevyMetl.h>
 #include <BeeThree.h>
@@ -120,15 +123,37 @@ string getNoteName(int note) {
 
 int getNote(StkFloat rawnote) {
     // rawnote is in terms of scale:
-    int rounded = round(rawnote);
+    int rounded = int(round(rawnote));
     int octave = rounded / 7;
     int note = rounded % 7;
     std::cout << rounded << " " << octave << " " << note << std::endl;
     return octave*12 + majorScale[note];
 }
 
+void initOpenGl() {
+    glEnable (GL_LINE_SMOOTH);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint (GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    glLineWidth (1.5f);
+}
+
+void setupOpenGlMatrices(float note, float time) {
+    glMatrixMode(GL_PROJECTION); //Open the projection matrix as current
+    glLoadIdentity(); //clear its contents to an identity matrix (which doesn't change anything when applied)
+    gluPerspective(60, 1.0, 0.1, 1000.0);
+    //this function is from the very useful glu library .
+    //It configures the projection matrix to the desired parameters
+    
+    glMatrixMode(GL_MODELVIEW); //select the matrix
+    glLoadIdentity(); //clear ...
+    gluLookAt ( note , 1, -time, note, 0, -time-1, 0, 1, 0 );
+}
+
 int main(int argc, char** argv)
 {
+    float position = 0.0f;
+    
 	al_init();
     al_init_font_addon();
     al_init_ttf_addon();
@@ -144,7 +169,15 @@ int main(int argc, char** argv)
     ALLEGRO_JOYSTICK* input_device = al_get_joystick(0);
     ALLEGRO_JOYSTICK_STATE state;
     
-    al_create_display(640, 480);
+    al_set_new_display_flags(ALLEGRO_OPENGL);
+    ALLEGRO_DISPLAY* display = al_create_display(640, 480);
+    
+    
+    
+    if(!display){
+        fprintf(stderr, "failed to create display!\n");
+        return -1;
+    }
     
     ALLEGRO_FONT* font = al_load_font("OpenSans-Regular.ttf", 20, 0);
     
@@ -228,8 +261,7 @@ int main(int argc, char** argv)
     catch ( RtError &error ) {
         error.printMessage();
     }
-        
-    bool noteOn = false;
+
     StkFloat frequency = 440.0;
     
     ALLEGRO_EVENT_QUEUE * event_queue = al_create_event_queue();
@@ -248,7 +280,7 @@ int main(int argc, char** argv)
         if (al_key_down(&keyboardstate, ALLEGRO_KEY_ENTER))
             offset = -state.stick->axis[0];
         
-        al_clear_to_color(al_map_rgb(255,255,255));
+        
         
         char text[255];
         char text2[255];
@@ -260,17 +292,12 @@ int main(int argc, char** argv)
         StkFloat rawfrequency = 440.0 + (state.stick->axis[0]+offset)*500.0;
         StkFloat amplitude = log((1.0-state.stick->axis[1]) * (e-1)*0.5 + 1.0);
         
-        //StkFloat overdrive = (1.0 - state.stick->axis[2])*2.0 + 1.0;
-        
         StkFloat rawnote = (state.stick->axis[0] + 1.0)*0.5*(maxNote - minNote) + minNote;
-        
-        //StkFloat frequency = getFrequency(round(note));
+        StkFloat middle = 0.5*(maxNote - minNote) + minNote;
         
         for (int i = 0; i < 32; ++i) {
             text3 << state.button[i] << " ";
         }
-        
-        //if (-state.stick->axis[2] > 0)
         
         if (state.button[0]) {
             note = getNote(rawnote) + 1;
@@ -279,8 +306,6 @@ int main(int argc, char** argv)
             note = getNote(rawnote);
         }
         
-        
-        ALLEGRO_TIMEOUT timeout;
         ALLEGRO_EVENT event;
         if (al_get_next_event(event_queue, &event)) {
             if (event.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN) {
@@ -330,14 +355,59 @@ int main(int argc, char** argv)
                 notes[group] = note;
             }
         }
+        
+        
+        
+        //al_clear_to_color(al_map_rgb(0,0,0));
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        setupOpenGlMatrices(float((rawnote-middle)*0.1f), float(position));
+        position += 0.01f;
+        glBegin(GL_LINES); //lookup for more options but GL_LINES tels GL that you'll be supplying a series of lines (via points)
+        
+        glColor3f(0.2f, 0.2f, 0.2f);
+        
+        for (int i = -50; i < 50; ++i) {
+            glVertex3f(i*0.1f-0.05f,0.0f,100.0f);
+            glVertex3f(i*0.1f-0.05f,0.0f,-position-100.0f);
+        }
+        
+        for (int i = -500; i < 500; ++i) {
+            glVertex3f(-100,0,i);
+            glVertex3f(100,0,i);
+        }
+        
+        glEnd(); //this will draw a single line watched from the camera that we just set up
+        
+        glBegin(GL_QUADS);
+        
+        glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
+        
+        glVertex3f(-0.05f, 0.0f, -50.0f);
+        glVertex3f(0.05f, 0.0f, -50.0f);
+        glVertex3f(0.05f, 0.0f, -100.0f);
+        glVertex3f(-0.05f, 0.0f, -100.0f);
+        
+        glEnd();
+        
+        
+        glFlush();
+        
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0.0, 640, 480, 0.0, -1.0, 10.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glDisable(GL_CULL_FACE);
 
         sprintf(text, "%f, %f, %f, %f", offset, state.stick->axis[0], state.stick->axis[1], state.stick->axis[2]);
         sprintf(text2, "%f -> %f, %f, %f, %s, %d", rawfrequency, frequency, amplitude, rawnote, getNoteName(getNote(rawnote)).c_str(), currentInstr);
         sprintf(text4, "Group: %d", group);
-        al_draw_text(font, al_map_rgb(0, 0, 0), 50, 50, 0, text);
-        al_draw_text(font, al_map_rgb(0, 0, 0), 50, 100, 0, text2);
-        al_draw_text(font, al_map_rgb(0, 0, 0), 50, 150, 0, text3.str().c_str());
-        al_draw_text(font, al_map_rgb(0, 0, 0), 50, 200, 0, text4);
+        al_draw_text(font, al_map_rgb(255, 255, 255), 50, 50, 0, text);
+        al_draw_text(font, al_map_rgb(255, 255, 255), 50, 100, 0, text2);
+        al_draw_text(font, al_map_rgb(255, 255, 255), 50, 150, 0, text3.str().c_str());
+        al_draw_text(font, al_map_rgb(255, 255, 255), 50, 200, 0, text4);
         
         //instr.setFrequency(frequency);
         //instr.controlChange(128, amplitude*100.0);
