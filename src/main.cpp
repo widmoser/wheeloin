@@ -196,10 +196,10 @@ int main(int argc, char** argv)
     TubeBell bell;
     
     
-    SampleInstrument sample("samples/PERCUSSION_128bpm/Percussion_03_Full.wav");
-    SampleInstrument sample2("samples/BASSLINES_128bpm/Bass_01_C.wav");
-    SampleInstrument sample3("samples/BASSLINES_128bpm/Bass_02_D#.wav");
-    SampleInstrument sample4("samples/BASSLINES_128bpm/Bass_03_E.wav");
+    SampleInstrument sample("../samples/PERCUSSION_128bpm/Percussion_03_Full.wav");
+    SampleInstrument sample2("../samples/BASSLINES_128bpm/Bass_01_C.wav");
+    SampleInstrument sample3("../samples/BASSLINES_128bpm/Bass_02_D#.wav");
+    SampleInstrument sample4("../samples/BASSLINES_128bpm/Bass_03_E.wav");
     
     Overdrive ov(&heavyMetl);
     ov.setOverdrive(5.0);
