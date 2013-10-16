@@ -8,16 +8,16 @@
 
 #include "Keyboard.h"
 
-void Keyboard::registerButtonListener(ButtonListener* listener) {
+void Keyboard::registerButtonListener(ButtonListener listener) {
     listeners.push_back(listener);
 }
 
-void Keyboard::unregisterButtonListener(ButtonListener* listener) {
+void Keyboard::unregisterButtonListener(ButtonListener listener) {
     listeners.erase(std::find(listeners.begin(), listeners.end(), listener));
 }
 
 void Keyboard::notifyButtonListeners(int button) {
-    for (std::vector<ButtonListener*>::iterator i = listeners.begin(); i != listeners.end(); ++i) {
-        (*i)->onButtonDown(button);
+    for (std::vector<ButtonListener>::iterator i = listeners.begin(); i != listeners.end(); ++i) {
+        (*i)(button);
     }
 }

@@ -11,6 +11,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
+#include "input/AllegroKeyboard.h"
+
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 
@@ -162,9 +164,8 @@ int main(int argc, char** argv)
     if (al_get_num_joysticks() <= 0)
         std::cerr << "ERROR: no input device found" << std::endl;
     
-    ALLEGRO_KEYBOARD_STATE keyboardstate;
+    AllegroKeyboard keyboard;
     
-    al_install_keyboard();
     
     ALLEGRO_JOYSTICK* input_device = al_get_joystick(0);
     ALLEGRO_JOYSTICK_STATE state;
@@ -273,11 +274,11 @@ int main(int argc, char** argv)
     
     while (running) {
         al_get_joystick_state(input_device, &state);
-        al_get_keyboard_state(&keyboardstate);
+        keyboard.update();
         
-        if (al_key_down(&keyboardstate, ALLEGRO_KEY_ESCAPE))
+        if (keyboard.isButtonDown(ALLEGRO_KEY_ESCAPE))
             running = false;
-        if (al_key_down(&keyboardstate, ALLEGRO_KEY_ENTER))
+        if (keyboard.isButtonDown(ALLEGRO_KEY_ENTER))
             offset = -state.stick->axis[0];
         
         
@@ -426,7 +427,6 @@ int main(int argc, char** argv)
     al_destroy_event_queue(event_queue);
     al_release_joystick(input_device);
     al_uninstall_joystick();
-    al_uninstall_keyboard();
     al_shutdown_ttf_addon();
     al_shutdown_font_addon();
 	return 0;
