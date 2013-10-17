@@ -14,6 +14,7 @@
 #include "engine/allegro/AllegroSystem.h"
 #include "engine/Keyboard.h"
 #include "engine/Joystick.h"
+#include "sound/stk/StkSynthesizer.h"
 
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -37,60 +38,10 @@
 #include "SampleInstrument.h"
 #include "Overdrive.h"
 
-#include <Voicer.h>
-#include <WvOut.h>
-#include <JCRev.h>
-
 #include "VolumeSine.h"
-#include "RtAudio.h"
 
 using namespace stk;
 using namespace std;
-
-// The TickData structure holds all the class instances and data that
-// are shared by the various processing functions.
-struct TickData {
-    Instrmnt **instrument;
-    Voicer *voicer;
-    JCRev reverb;
-    StkFloat volume;
-    StkFloat t60;
-    int nVoices;
-    int channels;
-    int counter;
-    int frequency;
-    
-    // Default constructor.
-    TickData() : instrument(0), voicer(0), volume(1.0), t60(0.75), nVoices(1), channels(2), counter(0) {}
-};
-
-
-
-
-
-StkFrames frames(RT_BUFFER_SIZE, 2);
-
-
-int currentInstr = 0;
-
-// This tick() function handles sample computation only.  It will be
-// called automatically when the system needs a new buffer of audio
-// samples.
-int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
-         double streamTime, RtAudioStreamStatus status, void *dataPointer )
-{
-    TickData* data = (TickData*) dataPointer;
-    register StkFloat sample;
-    register StkFloat *samples = (StkFloat *) outputBuffer;
-    
-    for ( unsigned int i=0; i<nBufferFrames; i++ ) {
-        sample = data->volume * data->reverb.tick( data->voicer->tick() );
-        for ( int k=0; k<data->channels; k++ )
-            *samples++ = sample;
-    }
-    
-    return 0;
-}
 
 volatile bool running = true;
 StkFloat halfNote = 1.0 / 12.0;
@@ -154,44 +105,37 @@ void setupOpenGlMatrices(float note, float time) {
     gluLookAt ( note , 1, -time, note, 0, -time-1, 0, 1, 0 );
 }
 
-int group = 0;
 bool triggered[] = { false, false, false, false };
 long noteIds[] = { -1, -1, -1, -1, -1, -1 };
 int notes[] = { -1, -1, -1, -1, -1, -1 };
-TickData data;
 StkFloat amplitude;
 double noteOff = 0;
 int note = -1;
 
+StkSynthesizer* globalSynth;
+
 void onJoystickButtonDown(int button) {
     if (button == 8) {
-        group--;
+        globalSynth->setActiveVoice(globalSynth->getActiveVoice()-1);
     } else if (button == 9) {
-        group++;
+        globalSynth->setActiveVoice(globalSynth->getActiveVoice()+1);
     } else if (button == 1 || button == 0) {
-        if (triggered[group]) {
-            noteIds[group] = data.voicer->noteOn(note, amplitude*128.0, group);
-            notes[group] = note;
-        } else if (note == notes[group]) {
-            data.voicer->noteOff(noteIds[group], 0.0);
+        if (triggered[globalSynth->getActiveVoice()]) {
+            globalSynth->noteOn(note, amplitude*128.0);
+            notes[globalSynth->getActiveVoice()] = note;
+        } else if (note == notes[globalSynth->getActiveVoice()]) {
+            globalSynth->noteOff();
             noteOff = al_get_time();
         }
     } else if (button >= 2) {
         int g = button+1;
         if (notes[g] < 0) {
-            noteIds[g] = data.voicer->noteOn(39, 128.0, g);
+            globalSynth->noteOn(39, 128.0, g);
             notes[g] = 1;
         } else {
-            data.voicer->noteOff(noteIds[g], 128.0);
+            globalSynth->noteOff(g);
             notes[g] = -1;
         }
-    }
-    
-    if (group < 0) {
-        group = 0;
-    }
-    if (group > 3) {
-        group = 3;
     }
 }
 
@@ -207,10 +151,13 @@ int main(int argc, char** argv)
     Keyboard& keyboard = system.getKeyboard();
     Joystick& joystick = system.getJoystick();
     
+    joystick.registerButtonListener(onJoystickButtonDown);
+    
     al_set_new_display_flags(ALLEGRO_OPENGL);
     ALLEGRO_DISPLAY* display = al_create_display(640, 480);
     
-    
+    StkSynthesizer synth("./rawwaves");
+    globalSynth = &synth;
     
     if(!display){
         fprintf(stderr, "failed to create display!\n");
@@ -219,9 +166,6 @@ int main(int argc, char** argv)
     
     ALLEGRO_FONT* font = al_load_font("OpenSans-Regular.ttf", 20, 0);
     
-    // Set the global sample rate before creating class instances.
-    Stk::setSampleRate( 44100.0 );
-    Stk::setRawwavePath("./rawwaves");
     
     HevyMetl heavyMetl;
     Whistle whistle;
@@ -243,55 +187,11 @@ int main(int argc, char** argv)
     ov.setOverdrive(5.0);
     
     Overdrive ov2(&whistle);
-    
-   // test.addFileLoop(new FileLoop("samples/ONE_SHOTS_128bpm/One_Shot_01_D#.wav"));
-    
-    int voiceCount = 8;
-    
-    Instrmnt** instr = new Instrmnt*[voiceCount];
-    instr[0] = &ov;
-    instr[1] = &ov2;
-    instr[2] = &voices;
-    instr[3] = &rhodey;
-    instr[4] = &sample;
-    instr[5] = &sample2;
-    instr[6] = &sample3;
-    instr[7] = &sample4;
-    
-    RtAudio dac;
 
-    data.nVoices = voiceCount;
-    data.instrument = instr;
-    
-    data.voicer = new Voicer(0.0);
-    for ( int i=0; i<data.nVoices; i++ )
-        data.voicer->addInstrument( data.instrument[i], i );
-    
-    
-    RtAudio::StreamParameters parameters;
-    parameters.deviceId = dac.getDefaultOutputDevice();
-    parameters.nChannels = 2;
-    RtAudioFormat format = ( sizeof(StkFloat) == 8 ) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32;
-    unsigned int bufferFrames = RT_BUFFER_SIZE;
-    try {
-        dac.openStream( &parameters, NULL, format, (unsigned int)Stk::sampleRate(), &bufferFrames, &tick, (void *)&data );
-    }
-    catch ( RtError &error ) {
-        error.printMessage();
-    }
-    
-    data.reverb.setT60( data.t60 );
-    data.reverb.setEffectMix(0.2);
-    
-    data.volume = 1.0;
-    
-    
-    try {
-        dac.startStream();
-    }
-    catch ( RtError &error ) {
-        error.printMessage();
-    }
+    synth.addInstrument(&ov);
+    synth.addInstrument(&sing);
+    synth.addInstrument(&fmVoices);
+    synth.start();
 
     StkFloat frequency = 440.0;
     
@@ -331,19 +231,11 @@ int main(int argc, char** argv)
         else if (joystick.isButtonDown(1)) {
             note = getNote(rawnote);
         }
-        
-            //frequency = getFrequency(note);
-        //instr[currentInstr]->noteOn(frequency, amplitude*1.0);
-        if (noteIds[group] < 0 && note > 0) {
-            
-        } else {
-            //data.voicer->noteOff(notes[group], 0.0);
-            //data.voicer->setFrequency(notes[group], (StkFloat)note);
-        }
-        if (!triggered[group]) {
+
+        if (!triggered[synth.getActiveVoice()]) {
             if (al_get_time() - noteOff > 0.05 && note > 0) {
-                noteIds[group] = data.voicer->noteOn(note, amplitude*128.0, group);
-                notes[group] = note;
+                synth.noteOn(note, amplitude*128.0);
+                notes[synth.getActiveVoice()] = note;
             }
         }
         
@@ -393,8 +285,8 @@ int main(int argc, char** argv)
         glDisable(GL_CULL_FACE);
 
         sprintf(text, "%f, %f, %f, %f", offset, joystick.getAxis(0), joystick.getAxis(1), joystick.getAxis(2));
-        sprintf(text2, "%f -> %f, %f, %f, %s, %d", rawfrequency, frequency, amplitude, rawnote, getNoteName(getNote(rawnote)).c_str(), currentInstr);
-        sprintf(text4, "Group: %d", group);
+        sprintf(text2, "%f -> %f, %f, %f, %s", rawfrequency, frequency, amplitude, rawnote, getNoteName(getNote(rawnote)).c_str());
+        sprintf(text4, "Group: %d", synth.getActiveVoice());
         al_draw_text(font, al_map_rgb(255, 255, 255), 50, 50, 0, text);
         al_draw_text(font, al_map_rgb(255, 255, 255), 50, 100, 0, text2);
         al_draw_text(font, al_map_rgb(255, 255, 255), 50, 150, 0, text3.str().c_str());
@@ -404,13 +296,6 @@ int main(int argc, char** argv)
         //instr.controlChange(128, amplitude*100.0);
         
         al_flip_display();
-    }
-    
-    try {
-        dac.closeStream();
-    }
-    catch ( RtError &error ) {
-        error.printMessage();
     }
     
     al_destroy_font(font);
