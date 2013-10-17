@@ -21,6 +21,7 @@ public:
     virtual Keyboard& getKeyboard();
     virtual Joystick& getJoystick();
     virtual void updateInput();
+    virtual double getTime();
 private:
     AllegroKeyboard* keyboard;
     AllegroJoystick* joystick;

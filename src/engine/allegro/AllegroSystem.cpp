@@ -40,3 +40,7 @@ void AllegroSystem::updateInput() {
         joystick->notifyButtonListeners(event.joystick.button);
     }
 }
+
+double AllegroSystem::getTime() {
+    return al_get_time();
+}

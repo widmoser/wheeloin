@@ -18,6 +18,8 @@ public:
     virtual Keyboard& getKeyboard() = 0;
     virtual Joystick& getJoystick() = 0;
     virtual void updateInput() = 0;
+    
+    virtual double getTime() = 0;
 };
 
 #endif /* defined(__steeringwheel__System__) */

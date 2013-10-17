@@ -12,7 +12,10 @@
 #include <iostream>
 #include <vector>
 
-typedef void (*ButtonListener)(int);
+class EventListener {
+public:
+    virtual void onButtonDown(int button) = 0;
+};
 
 class Keyboard {
     
@@ -22,15 +25,15 @@ public:
     
     virtual void update() = 0;
     
-    virtual void registerButtonListener(ButtonListener listener);
+    virtual void registerButtonListener(EventListener* listener);
     
-    virtual void unregisterButtonListener(ButtonListener listener);
+    virtual void unregisterButtonListener(EventListener* listener);
     
     void notifyButtonListeners(int button);
     
 private:
     
-    std::vector<ButtonListener> listeners;
+    std::vector<EventListener*> listeners;
     
 };
 

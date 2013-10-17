@@ -15,6 +15,8 @@
 #include "engine/Keyboard.h"
 #include "engine/Joystick.h"
 #include "sound/stk/StkSynthesizer.h"
+#include <Wheeloin.h>
+#include <Scale.h>
 
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -48,8 +50,6 @@ StkFloat halfNote = 1.0 / 12.0;
 StkFloat invPitch = 1.0 / 440.0;
 StkFloat invln2 = 1.0 / log(2.0);
 StkFloat e = exp(1.0);
-int minNote = 25;
-int maxNote = 54;
 
 
 string names[] = {
@@ -105,35 +105,6 @@ void setupOpenGlMatrices(float note, float time) {
     gluLookAt ( note , 1, -time, note, 0, -time-1, 0, 1, 0 );
 }
 
-bool triggered[] = { false, false, false, false };
-StkFloat amplitude;
-double noteOff = 0;
-int note = -1;
-
-StkSynthesizer* globalSynth;
-
-void onJoystickButtonDown(int button) {
-    if (button == 8) {
-        globalSynth->setActiveVoice(globalSynth->getActiveVoice()-1);
-    } else if (button == 9) {
-        globalSynth->setActiveVoice(globalSynth->getActiveVoice()+1);
-    } else if (button == 1 || button == 0) {
-        if (triggered[globalSynth->getActiveVoice()]) {
-            globalSynth->noteOn(note, amplitude*128.0);
-        } else if (note == globalSynth->getNote()) {
-            globalSynth->noteOff();
-            noteOff = al_get_time();
-        }
-    } else if (button >= 2) {
-        int g = button+1;
-        if (!globalSynth->isNoteOn(g)) {
-            globalSynth->noteOn(39, 128.0, g);
-        } else {
-            globalSynth->noteOff(g);
-        }
-    }
-}
-
 int main(int argc, char** argv)
 {
     float position = 0.0f;
@@ -143,17 +114,11 @@ int main(int argc, char** argv)
     al_init_font_addon();
     al_init_ttf_addon();
     
-    Keyboard& keyboard = system.getKeyboard();
-    Joystick& joystick = system.getJoystick();
-    
-    joystick.registerButtonListener(onJoystickButtonDown);
-    
     al_set_new_display_flags(ALLEGRO_OPENGL);
     ALLEGRO_DISPLAY* display = al_create_display(640, 480);
     
     StkSynthesizer synth("./rawwaves");
-    globalSynth = &synth;
-    
+
     if(!display){
         fprintf(stderr, "failed to create display!\n");
         return -1;
@@ -186,6 +151,10 @@ int main(int argc, char** argv)
     synth.addInstrument(&ov);
     synth.addInstrument(&sing);
     synth.addInstrument(&fmVoices);
+    
+    WheeloinConfiguration config(Scales::MAJOR, 25, 54);
+    Wheeloin wheeloin(synth, system, config);
+    
     synth.start();
 
     StkFloat frequency = 440.0;
@@ -196,11 +165,10 @@ int main(int argc, char** argv)
     while (running) {
         system.updateInput();
         
-        if (keyboard.isButtonDown(ALLEGRO_KEY_ESCAPE))
+        if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE))
             running = false;
-        if (keyboard.isButtonDown(ALLEGRO_KEY_ENTER))
-            offset = -joystick.getAxis(0);
-        
+       
+        wheeloin.processInput();
         
         
         char text[255];
@@ -208,38 +176,19 @@ int main(int argc, char** argv)
         stringstream text3;
         char text4[255];
         
+        double middle = 0.5*(config.maxNote - config.minNote) + config.minNote;
+
         
-        
-        StkFloat rawfrequency = 440.0 + (joystick.getAxis(0)+offset)*500.0;
-        amplitude = log((1.0-joystick.getAxis(1)) * (e-1)*0.5 + 1.0);
-        
-        StkFloat rawnote = (joystick.getAxis(0) + 1.0)*0.5*(maxNote - minNote) + minNote;
-        StkFloat middle = 0.5*(maxNote - minNote) + minNote;
         
         for (int i = 0; i < 32; ++i) {
-            text3 << joystick.isButtonDown(i) << " ";
+            text3 << system.getJoystick().isButtonDown(i) << " ";
         }
-        
-        if (joystick.isButtonDown(0)) {
-            note = getNote(rawnote) + 1;
-        }
-        else if (joystick.isButtonDown(1)) {
-            note = getNote(rawnote);
-        }
-
-        if (!triggered[synth.getActiveVoice()]) {
-            if (al_get_time() - noteOff > 0.05 && note > 0) {
-                synth.noteOn(note, amplitude*128.0);
-            }
-        }
-        
-        
         
         //al_clear_to_color(al_map_rgb(0,0,0));
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        setupOpenGlMatrices(float((rawnote-middle)*0.1f), float(position));
+        setupOpenGlMatrices(float((wheeloin.getInputScaleNote()-middle)*0.1f), float(position));
         position += 0.01f;
         glBegin(GL_LINES); //lookup for more options but GL_LINES tels GL that you'll be supplying a series of lines (via points)
         
@@ -278,8 +227,8 @@ int main(int argc, char** argv)
         glLoadIdentity();
         glDisable(GL_CULL_FACE);
 
-        sprintf(text, "%f, %f, %f, %f", offset, joystick.getAxis(0), joystick.getAxis(1), joystick.getAxis(2));
-        sprintf(text2, "%f -> %f, %f, %f, %s", rawfrequency, frequency, amplitude, rawnote, getNoteName(getNote(rawnote)).c_str());
+        sprintf(text, "%f, %f, %f, %f", offset, system.getJoystick().getAxis(0), system.getJoystick().getAxis(1), system.getJoystick().getAxis(2));
+        sprintf(text2, "%f, %f, %s", wheeloin.getVolume(), wheeloin.getInputScaleNote(), getNoteName(getNote(wheeloin.getInputScaleNote())).c_str());
         sprintf(text4, "Group: %d", synth.getActiveVoice());
         al_draw_text(font, al_map_rgb(255, 255, 255), 50, 50, 0, text);
         al_draw_text(font, al_map_rgb(255, 255, 255), 50, 100, 0, text2);
@@ -291,6 +240,7 @@ int main(int argc, char** argv)
         
         al_flip_display();
     }
+    synth.stop();
     
     al_destroy_font(font);
     al_shutdown_ttf_addon();
