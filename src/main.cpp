@@ -11,8 +11,9 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
-#include "input/AllegroKeyboard.h"
-#include "input/AllegroJoystick.h"
+#include "engine/allegro/AllegroSystem.h"
+#include "engine/Keyboard.h"
+#include "engine/Joystick.h"
 
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -198,16 +199,13 @@ int main(int argc, char** argv)
 {
     float position = 0.0f;
     
-	al_init();
+    AllegroSystem system;
+    
     al_init_font_addon();
     al_init_ttf_addon();
-    if (!al_install_joystick())
-        std::cerr << "ERROR: could not initialize input device driver" << std::endl;
-    if (al_get_num_joysticks() <= 0)
-        std::cerr << "ERROR: no input device found" << std::endl;
     
-    AllegroKeyboard keyboard;
-    AllegroJoystick joystick;
+    Keyboard& keyboard = system.getKeyboard();
+    Joystick& joystick = system.getJoystick();
     
     al_set_new_display_flags(ALLEGRO_OPENGL);
     ALLEGRO_DISPLAY* display = al_create_display(640, 480);
@@ -301,8 +299,7 @@ int main(int argc, char** argv)
     double offset;
     
     while (running) {
-        joystick.update();
-        keyboard.update();
+        system.updateInput();
         
         if (keyboard.isButtonDown(ALLEGRO_KEY_ESCAPE))
             running = false;

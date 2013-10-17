@@ -6,11 +6,11 @@
 //  Copyright (c) 2013 Hannes Widmoser. All rights reserved.
 //
 
-#include "input/AllegroJoystick.h"
+#include "AllegroJoystick.h"
 #include <allegro5/allegro.h>
 #include "Exception.h"
 
-AllegroJoystick::AllegroJoystick() {
+AllegroJoystick::AllegroJoystick(AllegroEventQueue& eventQueue) : eventQueue(eventQueue) {
     if (!al_install_joystick())
         std::cerr << "ERROR: could not initialize input device driver" << std::endl;
     if (al_get_num_joysticks() <= 0)
@@ -34,10 +34,6 @@ bool AllegroJoystick::isButtonDown(int button) {
 
 void AllegroJoystick::update() {
     al_get_joystick_state(input_device, &state);
-    ALLEGRO_EVENT event = eventQueue.getNextEvent();
-    if (event.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN) {
-        notifyButtonListeners(event.joystick.button);
-    }
 }
 
 float AllegroJoystick::getAxis(int axis) {

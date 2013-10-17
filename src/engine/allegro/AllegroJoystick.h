@@ -10,12 +10,12 @@
 #define __steeringwheel__AllegroJoystick__
 
 #include <iostream>
-#include "input/Joystick.h"
-#include "input/AllegroEventQueue.h"
+#include "engine/Joystick.h"
+#include "AllegroEventQueue.h"
 
 class AllegroJoystick : public Joystick {
 public:
-    AllegroJoystick();
+    AllegroJoystick(AllegroEventQueue& eventQueue);
     virtual ~AllegroJoystick();
     
     virtual bool isButtonDown(int button);
@@ -27,7 +27,7 @@ public:
 private:
     ALLEGRO_JOYSTICK* input_device;
     ALLEGRO_JOYSTICK_STATE state;
-    AllegroEventQueue eventQueue;
+    AllegroEventQueue& eventQueue;
 };
 
 #endif /* defined(__steeringwheel__AllegroJoystick__) */

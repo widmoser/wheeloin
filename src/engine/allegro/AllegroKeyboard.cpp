@@ -7,10 +7,10 @@
 //
 
 #include <allegro5/allegro.h>
-#include "input/AllegroKeyboard.h"
+#include "AllegroKeyboard.h"
 #include "Exception.h"
 
-AllegroKeyboard::AllegroKeyboard() {
+AllegroKeyboard::AllegroKeyboard(AllegroEventQueue& eventQueue) : eventQueue(eventQueue) {
     if (!al_install_keyboard()) {
         throw Exception("Could not install keyboard");
     }
@@ -28,8 +28,5 @@ bool AllegroKeyboard::isButtonDown(int button) {
 
 void AllegroKeyboard::update() {
     al_get_keyboard_state(&keyboardstate);
-    ALLEGRO_EVENT event = eventQueue.getNextEvent();
-    if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-        notifyButtonListeners(event.keyboard.keycode);
-    }
+    
 }

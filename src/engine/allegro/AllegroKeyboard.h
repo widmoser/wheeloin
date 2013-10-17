@@ -10,12 +10,12 @@
 #define __steeringwheel__AllegroKeyboard__
 
 #include <iostream>
-#include "input/Keyboard.h"
-#include "input/AllegroEventQueue.h"
+#include "engine/Keyboard.h"
+#include "AllegroEventQueue.h"
 
 class AllegroKeyboard : public Keyboard {
 public:
-    AllegroKeyboard();
+    AllegroKeyboard(AllegroEventQueue& eventQueue);
     virtual ~AllegroKeyboard();
     
     virtual bool isButtonDown(int button);
@@ -24,7 +24,7 @@ public:
     
 private:
     ALLEGRO_KEYBOARD_STATE keyboardstate;
-    AllegroEventQueue eventQueue;
+    AllegroEventQueue& eventQueue;
 };
 
 #endif /* defined(__steeringwheel__AllegroKeyboard__) */
