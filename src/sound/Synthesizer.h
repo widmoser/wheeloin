@@ -22,9 +22,13 @@ public:
     
     void noteOn(double note, double amplitude);
     void noteOff();
+    bool isNoteOn();
+    double getNote();
     
     virtual void noteOn(double note, double amplitude, int voice) = 0;
     virtual void noteOff(int voice) = 0;
+    virtual bool isNoteOn(int voice) = 0;
+    virtual double getNote(int voice) = 0;
     
     virtual void start() = 0;
     virtual void stop() = 0;

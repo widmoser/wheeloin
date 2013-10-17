@@ -32,8 +32,12 @@ public:
     
     void noteOn(double note, double amplitude) { Synthesizer::noteOn(note, amplitude); }
     void noteOff() { Synthesizer::noteOff(); }
+    bool isNoteOn() { return Synthesizer::isNoteOn(); }
+    double getNote() { return Synthesizer::getNote(); }
     virtual void noteOn(double note, double amplitude, int voice);
     virtual void noteOff(int voice);
+    virtual bool isNoteOn(int voice);
+    virtual double getNote(int voice);
     
     virtual void start();
     virtual void stop();
@@ -42,7 +46,8 @@ private:
     int channels;
     RtAudio dac;
     
-    std::vector<long> activeNote;
+    std::vector<long> activeNoteId;
+    std::vector<double> activeNote;
     int voiceCount;
     Voicer voicer;
     

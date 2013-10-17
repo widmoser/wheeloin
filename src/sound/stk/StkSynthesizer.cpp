@@ -26,6 +26,7 @@ StkSynthesizer::~StkSynthesizer() {
 
 void StkSynthesizer::addInstrument(Instrmnt* instrument) {
     voicer.addInstrument(instrument, voiceCount++);
+    activeNoteId.push_back(-1);
     activeNote.push_back(-1);
 }
 
@@ -34,11 +35,22 @@ int StkSynthesizer::getVoiceCount() {
 }
 
 void StkSynthesizer::noteOn(double note, double amplitude, int voice) {
-    activeNote[voice] = voicer.noteOn(note, amplitude, voice);
+    activeNoteId[voice] = voicer.noteOn(note, amplitude, voice);
+    activeNote[voice] = note;
 }
 
 void StkSynthesizer::noteOff(int voice) {
-    voicer.noteOff(activeNote[voice], 0.0);
+    voicer.noteOff(activeNoteId[voice], 0.0);
+    activeNoteId[voice] = -1;
+    activeNote[voice] = -1;
+}
+
+bool StkSynthesizer::isNoteOn(int voice) {
+    return activeNoteId[voice] >= 0;
+}
+
+double StkSynthesizer::getNote(int voice) {
+    return activeNote[voice];
 }
 
 void StkSynthesizer::start() {

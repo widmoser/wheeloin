@@ -28,6 +28,14 @@ void Synthesizer::noteOn(double note, double amplitude) {
     noteOn(note, amplitude, activeVoice);
 }
 
+bool Synthesizer::isNoteOn() {
+    return isNoteOn(activeVoice);
+}
+
+double Synthesizer::getNote() {
+    return getNote(activeVoice);
+}
+
 void Synthesizer::noteOff() {
     noteOff(activeVoice);
 }

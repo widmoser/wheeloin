@@ -106,8 +106,6 @@ void setupOpenGlMatrices(float note, float time) {
 }
 
 bool triggered[] = { false, false, false, false };
-long noteIds[] = { -1, -1, -1, -1, -1, -1 };
-int notes[] = { -1, -1, -1, -1, -1, -1 };
 StkFloat amplitude;
 double noteOff = 0;
 int note = -1;
@@ -122,19 +120,16 @@ void onJoystickButtonDown(int button) {
     } else if (button == 1 || button == 0) {
         if (triggered[globalSynth->getActiveVoice()]) {
             globalSynth->noteOn(note, amplitude*128.0);
-            notes[globalSynth->getActiveVoice()] = note;
-        } else if (note == notes[globalSynth->getActiveVoice()]) {
+        } else if (note == globalSynth->getNote()) {
             globalSynth->noteOff();
             noteOff = al_get_time();
         }
     } else if (button >= 2) {
         int g = button+1;
-        if (notes[g] < 0) {
+        if (!globalSynth->isNoteOn(g)) {
             globalSynth->noteOn(39, 128.0, g);
-            notes[g] = 1;
         } else {
             globalSynth->noteOff(g);
-            notes[g] = -1;
         }
     }
 }
@@ -235,7 +230,6 @@ int main(int argc, char** argv)
         if (!triggered[synth.getActiveVoice()]) {
             if (al_get_time() - noteOff > 0.05 && note > 0) {
                 synth.noteOn(note, amplitude*128.0);
-                notes[synth.getActiveVoice()] = note;
             }
         }
         
