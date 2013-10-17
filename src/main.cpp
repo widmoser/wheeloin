@@ -12,6 +12,7 @@
 #include <allegro5/allegro_ttf.h>
 
 #include "input/AllegroKeyboard.h"
+#include "input/AllegroJoystick.h"
 
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -152,6 +153,47 @@ void setupOpenGlMatrices(float note, float time) {
     gluLookAt ( note , 1, -time, note, 0, -time-1, 0, 1, 0 );
 }
 
+int group = 0;
+bool triggered[] = { false, false, false, false };
+long noteIds[] = { -1, -1, -1, -1, -1, -1 };
+int notes[] = { -1, -1, -1, -1, -1, -1 };
+TickData data;
+StkFloat amplitude;
+double noteOff = 0;
+int note = -1;
+
+void onJoystickButtonDown(int button) {
+    if (button == 8) {
+        group--;
+    } else if (button == 9) {
+        group++;
+    } else if (button == 1 || button == 0) {
+        if (triggered[group]) {
+            noteIds[group] = data.voicer->noteOn(note, amplitude*128.0, group);
+            notes[group] = note;
+        } else if (note == notes[group]) {
+            data.voicer->noteOff(noteIds[group], 0.0);
+            noteOff = al_get_time();
+        }
+    } else if (button >= 2) {
+        int g = button+1;
+        if (notes[g] < 0) {
+            noteIds[g] = data.voicer->noteOn(39, 128.0, g);
+            notes[g] = 1;
+        } else {
+            data.voicer->noteOff(noteIds[g], 128.0);
+            notes[g] = -1;
+        }
+    }
+    
+    if (group < 0) {
+        group = 0;
+    }
+    if (group > 3) {
+        group = 3;
+    }
+}
+
 int main(int argc, char** argv)
 {
     float position = 0.0f;
@@ -165,10 +207,7 @@ int main(int argc, char** argv)
         std::cerr << "ERROR: no input device found" << std::endl;
     
     AllegroKeyboard keyboard;
-    
-    
-    ALLEGRO_JOYSTICK* input_device = al_get_joystick(0);
-    ALLEGRO_JOYSTICK_STATE state;
+    AllegroJoystick joystick;
     
     al_set_new_display_flags(ALLEGRO_OPENGL);
     ALLEGRO_DISPLAY* display = al_create_display(640, 480);
@@ -221,14 +260,7 @@ int main(int argc, char** argv)
     instr[6] = &sample3;
     instr[7] = &sample4;
     
-    bool triggered[] = { false, false, false, false };
-    
-    long noteIds[] = { -1, -1, -1, -1, -1, -1 };
-    int notes[] = { -1, -1, -1, -1, -1, -1 };
-    int group = 0;
-    
     RtAudio dac;
-    TickData data;
 
     data.nVoices = voiceCount;
     data.instrument = instr;
@@ -265,21 +297,17 @@ int main(int argc, char** argv)
 
     StkFloat frequency = 440.0;
     
-    ALLEGRO_EVENT_QUEUE * event_queue = al_create_event_queue();
-    al_register_event_source(event_queue, al_get_joystick_event_source());
     
-    int note = -1;
-    double noteOff = 0;
     double offset;
     
     while (running) {
-        al_get_joystick_state(input_device, &state);
+        joystick.update();
         keyboard.update();
         
         if (keyboard.isButtonDown(ALLEGRO_KEY_ESCAPE))
             running = false;
         if (keyboard.isButtonDown(ALLEGRO_KEY_ENTER))
-            offset = -state.stick->axis[0];
+            offset = -joystick.getAxis(0);
         
         
         
@@ -290,56 +318,21 @@ int main(int argc, char** argv)
         
         
         
-        StkFloat rawfrequency = 440.0 + (state.stick->axis[0]+offset)*500.0;
-        StkFloat amplitude = log((1.0-state.stick->axis[1]) * (e-1)*0.5 + 1.0);
+        StkFloat rawfrequency = 440.0 + (joystick.getAxis(0)+offset)*500.0;
+        amplitude = log((1.0-joystick.getAxis(1)) * (e-1)*0.5 + 1.0);
         
-        StkFloat rawnote = (state.stick->axis[0] + 1.0)*0.5*(maxNote - minNote) + minNote;
+        StkFloat rawnote = (joystick.getAxis(0) + 1.0)*0.5*(maxNote - minNote) + minNote;
         StkFloat middle = 0.5*(maxNote - minNote) + minNote;
         
         for (int i = 0; i < 32; ++i) {
-            text3 << state.button[i] << " ";
+            text3 << joystick.isButtonDown(i) << " ";
         }
         
-        if (state.button[0]) {
+        if (joystick.isButtonDown(0)) {
             note = getNote(rawnote) + 1;
         }
-        else if (state.button[1]) {
+        else if (joystick.isButtonDown(1)) {
             note = getNote(rawnote);
-        }
-        
-        ALLEGRO_EVENT event;
-        if (al_get_next_event(event_queue, &event)) {
-            if (event.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN) {
-                if (event.joystick.button == 8) {
-                    group--;
-                } else if (event.joystick.button == 9) {
-                    group++;
-                } else if (event.joystick.button == 1 || event.joystick.button == 0) {
-                    if (triggered[group]) {
-                        noteIds[group] = data.voicer->noteOn(note, amplitude*128.0, group);
-                        notes[group] = note;
-                    } else if (note == notes[group]) {
-                        data.voicer->noteOff(noteIds[group], 0.0);
-                        noteOff = al_get_time();
-                    }
-                } else if (event.joystick.button >= 2) {
-                    int g = event.joystick.button+1;
-                    if (notes[g] < 0) {
-                        noteIds[g] = data.voicer->noteOn(39, 128.0, g);
-                        notes[g] = 1;
-                    } else {
-                        data.voicer->noteOff(noteIds[g], 128.0);
-                        notes[g] = -1;
-                    }
-                }
-                
-                if (group < 0) {
-                    group = 0;
-                }
-                if (group > 3) {
-                    group = 3;
-                }
-            }
         }
         
             //frequency = getFrequency(note);
@@ -402,7 +395,7 @@ int main(int argc, char** argv)
         glLoadIdentity();
         glDisable(GL_CULL_FACE);
 
-        sprintf(text, "%f, %f, %f, %f", offset, state.stick->axis[0], state.stick->axis[1], state.stick->axis[2]);
+        sprintf(text, "%f, %f, %f, %f", offset, joystick.getAxis(0), joystick.getAxis(1), joystick.getAxis(2));
         sprintf(text2, "%f -> %f, %f, %f, %s, %d", rawfrequency, frequency, amplitude, rawnote, getNoteName(getNote(rawnote)).c_str(), currentInstr);
         sprintf(text4, "Group: %d", group);
         al_draw_text(font, al_map_rgb(255, 255, 255), 50, 50, 0, text);
@@ -424,9 +417,6 @@ int main(int argc, char** argv)
     }
     
     al_destroy_font(font);
-    al_destroy_event_queue(event_queue);
-    al_release_joystick(input_device);
-    al_uninstall_joystick();
     al_shutdown_ttf_addon();
     al_shutdown_font_addon();
 	return 0;

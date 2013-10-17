@@ -17,8 +17,6 @@ class Joystick : public Keyboard {
     
 public:
     
-    virtual ~Joystick() = 0;
-    
     virtual float getAxis(int axis) = 0;
 
 };
