@@ -25,6 +25,11 @@ std::string getNoteName(int note) {
 }
 
 Score::Score(Wheeloin& instrument, Renderer& renderer) : instrument(instrument), renderer(renderer), position(0.0) {
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    glLineWidth(1.5f);
 }
 
 void Score::setupOpenGlMatrices(float note, float time) {
