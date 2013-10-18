@@ -12,11 +12,13 @@
 #include <iostream>
 #include "Keyboard.h"
 #include "Joystick.h"
+#include "Renderer.h"
 
 class System {
 public:
     virtual Keyboard& getKeyboard() = 0;
     virtual Joystick& getJoystick() = 0;
+    virtual Renderer& getRenderer() = 0;
     virtual void updateInput() = 0;
     
     virtual double getTime() = 0;

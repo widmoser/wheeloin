@@ -10,5 +10,16 @@
 #define __steeringwheel__Renderer__
 
 #include <iostream>
+#include <string>
+
+class Renderer {
+public:
+    
+    virtual void setTextColor(int r, int g, int b) = 0;
+    virtual void setTextFont(const std::string& file, int size) = 0;
+    virtual void drawText(float x, float y, const std::string& text) = 0;
+    
+    virtual void updateDisplay() = 0;
+};
 
 #endif /* defined(__steeringwheel__Renderer__) */

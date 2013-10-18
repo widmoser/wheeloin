@@ -10,7 +10,7 @@
 
 const double Wheeloin::e = std::exp(1.0);
 
-Wheeloin::Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration) : synth(synth), system(system), note(-1), amplitude(0.0), noteOff(0.0), rawnote(-1.0), offset(0.0), keyboard(system.getKeyboard()), joystick(system.getJoystick()), conf(configuration) {
+Wheeloin::Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration) : synth(synth), system(system), note(-1), amplitude(0.0), noteOff(0.0), inputScaleNote(-1.0), inputNote(-1.0), offset(0.0), keyboard(system.getKeyboard()), joystick(system.getJoystick()), conf(configuration) {
     triggered.resize(synth.getVoiceCount(), false);
     joystick.registerButtonListener(this);
 }
@@ -43,13 +43,13 @@ void Wheeloin::onButtonDown(int button) {
 
 void Wheeloin::processInput() {
     amplitude = log((1.0-joystick.getAxis(1)) * (e-1)*0.5 + 1.0);
-    rawnote = (joystick.getAxis(0) + 1.0)*0.5*(conf.maxNote - conf.minNote) + conf.minNote;
-    
+    inputScaleNote = (joystick.getAxis(0) + 1.0)*0.5*(conf.maxNote - conf.minNote) + conf.minNote;
+    inputNote = conf.scale.getNote(inputScaleNote);
     if (joystick.isButtonDown(0)) {
-        note = conf.scale.getNote(rawnote) + 1;
+        note = inputNote + 1;
     }
     else if (joystick.isButtonDown(1)) {
-        note = conf.scale.getNote(rawnote);
+        note = inputNote;
     }
     
     if (!triggered[synth.getActiveVoice()]) {

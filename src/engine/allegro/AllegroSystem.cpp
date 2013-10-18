@@ -8,14 +8,26 @@
 
 #include "AllegroSystem.h"
 
-AllegroSystem::AllegroSystem() {
-    al_init();
+void AllegroSystem::initInput() {
     eventQueue = new AllegroEventQueue();
     keyboard = new AllegroKeyboard(*eventQueue);
     joystick = new AllegroJoystick(*eventQueue);
 }
 
+AllegroSystem::AllegroSystem() {
+    al_init();
+    initInput();
+    renderer = new AllegroRenderer();
+}
+
+AllegroSystem::AllegroSystem(int width, int height, bool fullscreen) {
+    al_init();
+    initInput();
+    renderer = new AllegroRenderer(width, height, fullscreen);
+}
+
 AllegroSystem::~AllegroSystem() {
+    delete renderer;
     delete keyboard;
     delete joystick;
     delete eventQueue;
@@ -28,6 +40,10 @@ Keyboard& AllegroSystem::getKeyboard() {
 
 Joystick& AllegroSystem::getJoystick() {
     return *joystick;
+}
+
+Renderer& AllegroSystem::getRenderer() {
+    return *renderer;
 }
 
 void AllegroSystem::updateInput() {

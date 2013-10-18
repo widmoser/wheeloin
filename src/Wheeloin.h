@@ -33,11 +33,16 @@ public:
     void setTriggered(int voice, bool value = true);
     void onButtonDown(int button);
     
-    double getInputScaleNote() { return rawnote; }
+    double getInputScaleNote() { return inputScaleNote; }
+    int getInputNote() { return inputNote; }
     int getNote() { return note; }
     double getVolume() { return amplitude; }
     
+    int getActiveVoice() { return synth.getActiveVoice(); }
+    
     void processInput();
+    
+    WheeloinConfiguration& getConfiguration() { return conf; }
   
 private:
     
@@ -49,7 +54,8 @@ private:
     Keyboard& keyboard;
     Joystick& joystick;
     
-    double rawnote;
+    double inputScaleNote;
+    int inputNote;
     int note;
     double amplitude;
     double noteOff;
