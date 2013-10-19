@@ -7,3 +7,7 @@
 //
 
 #include "Exception.h"
+
+const std::string& Exception::getMessage() {
+    return message;
+}

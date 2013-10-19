@@ -6,15 +6,16 @@
 //  Copyright (c) 2013 Hannes Widmoser. All rights reserved.
 //
 
-#ifndef __steeringwheel__Score__
-#define __steeringwheel__Score__
+#ifndef __steeringwheel__ScoreDisplay__
+#define __steeringwheel__ScoreDisplay__
 
 #include <iostream>
 #include <Wheeloin.h>
+#include <Score.h>
 
 class ScoreDisplay {
 public:
-    ScoreDisplay(Wheeloin& instrument, System& system);
+    ScoreDisplay(Wheeloin& instrument, System& system, Score& score);
     void draw();
 private:
     float getAspect();
@@ -34,10 +35,11 @@ private:
     Wheeloin& instrument;
     System& system;
     Renderer& renderer;
+    Score& score;
     
     float position;
     float gridWidth;
     float gridLength;
 };
 
-#endif /* defined(__steeringwheel__Score__) */
+#endif /* defined(__steeringwheel__ScoreDisplay__) */

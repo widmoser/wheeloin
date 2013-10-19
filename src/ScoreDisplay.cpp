@@ -24,7 +24,7 @@ std::string getNoteName(int note) {
     }
 }
 
-ScoreDisplay::ScoreDisplay(Wheeloin& instrument, System& system) : instrument(instrument), system(system), renderer(system.getRenderer()), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
+ScoreDisplay::ScoreDisplay(Wheeloin& instrument, System& system, Score& score) : instrument(instrument), system(system), renderer(system.getRenderer()), score(score), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

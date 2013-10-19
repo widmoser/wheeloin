@@ -14,6 +14,7 @@
 #include <Wheeloin.h>
 #include <ScoreDisplay.h>
 #include <Scale.h>
+#include <Exception.h>
 
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -25,27 +26,34 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    volatile bool running = true;
-    
-    AllegroSystem system(1440, 900);
-    system.getRenderer().setTextFont("OpenSans-Regular.ttf", 20);
-    system.getRenderer().setTextColor(255, 255, 255);
-    
-    WheeloinSynth synth;
-    WheeloinConfiguration config(Scales::MAJOR, 25, 54);
-    Wheeloin wheeloin(synth, system, config);
-    
-    ScoreDisplay score(wheeloin, system);
-    
-    synth.start();
-    while (running) {
-        system.updateInput();
-        if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE))
-            running = false;
-        wheeloin.processInput();
-        score.draw();
-        system.getRenderer().updateDisplay();
+    try {
+        volatile bool running = true;
+        
+        AllegroSystem system(1440, 900);
+        system.getRenderer().setTextFont("OpenSans-Regular.ttf", 20);
+        system.getRenderer().setTextColor(255, 255, 255);
+        
+        WheeloinSynth synth;
+        WheeloinConfiguration config(Scales::MAJOR, 25, 54);
+        Wheeloin wheeloin(synth, system, config);
+        
+        Score score("test.score");
+        ScoreDisplay scoreDisplay(wheeloin, system, score);
+        
+        synth.start();
+        while (running) {
+            system.updateInput();
+            if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE))
+                running = false;
+            wheeloin.processInput();
+            scoreDisplay.draw();
+            system.getRenderer().updateDisplay();
+        }
+        synth.stop();
+        
+        return 0;
+    } catch (Exception e) {
+        std::cerr << e.getMessage() << std::endl;
+        return 1;
     }
-    synth.stop();
-	return 0;
 }
