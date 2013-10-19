@@ -12,7 +12,7 @@
 #include "engine/Joystick.h"
 #include "WheeloinSynth.h"
 #include <Wheeloin.h>
-#include <Score.h>
+#include <ScoreDisplay.h>
 #include <Scale.h>
 
 #include <OpenGL/gl.h>
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     WheeloinConfiguration config(Scales::MAJOR, 25, 54);
     Wheeloin wheeloin(synth, system, config);
     
-    Score score(wheeloin, system.getRenderer());
+    ScoreDisplay score(wheeloin, system.getRenderer());
     
     synth.start();
     while (running) {

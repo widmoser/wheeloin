@@ -1,12 +1,12 @@
 //
-//  Score.cpp
+//  ScoreDisplay.cpp
 //  steeringwheel
 //
 //  Created by Hannes Widmoser on 10/18/13.
 //  Copyright (c) 2013 Hannes Widmoser. All rights reserved.
 //
 
-#include "Score.h"
+#include "ScoreDisplay.h"
 #include <sstream>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -24,7 +24,7 @@ std::string getNoteName(int note) {
     }
 }
 
-Score::Score(Wheeloin& instrument, Renderer& renderer) : instrument(instrument), renderer(renderer), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
+ScoreDisplay::ScoreDisplay(Wheeloin& instrument, Renderer& renderer) : instrument(instrument), renderer(renderer), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -32,33 +32,33 @@ Score::Score(Wheeloin& instrument, Renderer& renderer) : instrument(instrument),
     glLineWidth(1.5f);
 }
 
-float Score::getAspect() {
+float ScoreDisplay::getAspect() {
     return float(renderer.getDisplayWidth()) / float(renderer.getDisplayHeight());
 }
 
-void Score::setProjection() {
+void ScoreDisplay::setProjection() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(90, getAspect(), 0.1, 1000.0);
 }
 
-void Score::setCamera(float note, float time) {
+void ScoreDisplay::setCamera(float note, float time) {
     glMatrixMode(GL_MODELVIEW); //select the matrix
     glLoadIdentity(); //clear ...
     gluLookAt(note , 1, -time, note, 0, -time-0.9, 0, 1, 0);
 }
 
-void Score::setView() {
+void ScoreDisplay::setView() {
     setProjection();
     setCamera(float(instrument.getInputScaleNote())*gridWidth, position);
 }
 
-void Score::clear() {
+void ScoreDisplay::clear() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Score::drawGrid() {
+void ScoreDisplay::drawGrid() {
     WheeloinConfiguration& c = instrument.getConfiguration();
     glColor3f(0.2f, 0.2f, 0.2f);
     glBegin(GL_LINES);
@@ -75,7 +75,7 @@ void Score::drawGrid() {
     glEnd();
 }
 
-void Score::drawNotes() {
+void ScoreDisplay::drawNotes() {
     glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
     glBegin(GL_QUADS);
     glVertex3f(-0.05f, 0.0f, -50.0f);
@@ -85,7 +85,7 @@ void Score::drawNotes() {
     glEnd();
 }
 
-void Score::drawCursor() {
+void ScoreDisplay::drawCursor() {
     glColor3f(0.7f, 0.8f, 1.0f);
     float radius = 0.5f*gridWidth*float(instrument.getVolume());
     float centerX = float(instrument.getInputScaleNote())*gridWidth;
@@ -104,7 +104,7 @@ void Score::drawCursor() {
     glEnd();
 }
 
-void Score::draw() {
+void ScoreDisplay::draw() {
     clear();
     
     setView();
@@ -117,7 +117,7 @@ void Score::draw() {
     position += 0.01f;
 }
 
-void Score::drawTextOverlay() {
+void ScoreDisplay::drawTextOverlay() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, renderer.getDisplayWidth(), renderer.getDisplayHeight(), 0.0, -1.0, 10.0);

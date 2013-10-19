@@ -1,5 +1,5 @@
 //
-//  Score.h
+//  ScoreDisplay.h
 //  steeringwheel
 //
 //  Created by Hannes Widmoser on 10/18/13.
@@ -12,9 +12,9 @@
 #include <iostream>
 #include <Wheeloin.h>
 
-class Score {
+class ScoreDisplay {
 public:
-    Score(Wheeloin& instrument, Renderer& renderer);
+    ScoreDisplay(Wheeloin& instrument, Renderer& renderer);
     void draw();
 private:
     float getAspect();
