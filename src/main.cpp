@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     WheeloinConfiguration config(Scales::MAJOR, 25, 54);
     Wheeloin wheeloin(synth, system, config);
     
-    ScoreDisplay score(wheeloin, system.getRenderer());
+    ScoreDisplay score(wheeloin, system);
     
     synth.start();
     while (running) {

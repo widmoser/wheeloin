@@ -14,7 +14,7 @@
 
 class ScoreDisplay {
 public:
-    ScoreDisplay(Wheeloin& instrument, Renderer& renderer);
+    ScoreDisplay(Wheeloin& instrument, System& system);
     void draw();
 private:
     float getAspect();
@@ -28,10 +28,11 @@ private:
     void drawGrid();
     void drawNotes();
     void drawCursor();
-    void drawTextOverlay();
+    void drawTextOverlay(float delta);
     
     
     Wheeloin& instrument;
+    System& system;
     Renderer& renderer;
     
     float position;

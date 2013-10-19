@@ -24,7 +24,7 @@ std::string getNoteName(int note) {
     }
 }
 
-ScoreDisplay::ScoreDisplay(Wheeloin& instrument, Renderer& renderer) : instrument(instrument), renderer(renderer), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
+ScoreDisplay::ScoreDisplay(Wheeloin& instrument, System& system) : instrument(instrument), system(system), renderer(system.getRenderer()), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -112,12 +112,11 @@ void ScoreDisplay::draw() {
     drawNotes();
     drawCursor();
     
-    drawTextOverlay();
-    
-    position += 0.01f;
+    drawTextOverlay(float(system.getTime()) - position);
+    position = float(system.getTime());
 }
 
-void ScoreDisplay::drawTextOverlay() {
+void ScoreDisplay::drawTextOverlay(float delta) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, renderer.getDisplayWidth(), renderer.getDisplayHeight(), 0.0, -1.0, 10.0);
@@ -128,7 +127,7 @@ void ScoreDisplay::drawTextOverlay() {
     std::stringstream text;
     std::stringstream text2;
     
-    text << "Group: " << instrument.getActiveVoice();
+    text << "Group: " << instrument.getActiveVoice() << " " << system.getTime() << " FPS: " << 1.0f / delta;
     text2 << instrument.getVolume() << " " << instrument.getInputScaleNote() << " " << getNoteName(instrument.getInputNote());
     renderer.drawText(50, 50, text.str());
     renderer.drawText(50, 100, text2.str());
