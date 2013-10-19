@@ -19,6 +19,9 @@ public:
     virtual void setTextFont(const std::string& file, int size) = 0;
     virtual void drawText(float x, float y, const std::string& text) = 0;
     
+    virtual int getDisplayWidth() = 0;
+    virtual int getDisplayHeight() = 0;
+    
     virtual void updateDisplay() = 0;
 };
 

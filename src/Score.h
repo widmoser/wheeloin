@@ -17,14 +17,26 @@ public:
     Score(Wheeloin& instrument, Renderer& renderer);
     void draw();
 private:
+    float getAspect();
     
+    void setProjection();
+    void setCamera(float note, float time);
+    void setView();
+    
+    void clear();
+    
+    void drawGrid();
+    void drawNotes();
+    void drawCursor();
     void drawTextOverlay();
-    void setupOpenGlMatrices(float note, float time);
+    
     
     Wheeloin& instrument;
     Renderer& renderer;
     
     float position;
+    float gridWidth;
+    float gridLength;
 };
 
 #endif /* defined(__steeringwheel__Score__) */

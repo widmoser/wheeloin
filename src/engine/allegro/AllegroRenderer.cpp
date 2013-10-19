@@ -57,3 +57,11 @@ void AllegroRenderer::drawText(float x, float y, const std::string& text) {
 void AllegroRenderer::updateDisplay() {
     al_flip_display();
 }
+
+int AllegroRenderer::getDisplayWidth() {
+    return al_get_display_width(display);
+}
+
+int AllegroRenderer::getDisplayHeight() {
+    return al_get_display_height(display);
+}

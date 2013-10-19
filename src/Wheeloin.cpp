@@ -10,7 +10,7 @@
 
 const double Wheeloin::e = std::exp(1.0);
 
-Wheeloin::Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration) : synth(synth), system(system), note(-1), amplitude(0.0), noteOff(0.0), inputScaleNote(-1.0), inputNote(-1.0), offset(0.0), keyboard(system.getKeyboard()), joystick(system.getJoystick()), conf(configuration) {
+Wheeloin::Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration) : synth(synth), system(system), note(-1), amplitude(0.0), noteOff(0.0), inputScaleNote(-1.0), inputNote(-1), offset(0.0), keyboard(system.getKeyboard()), joystick(system.getJoystick()), conf(configuration) {
     triggered.resize(synth.getVoiceCount(), false);
     joystick.registerButtonListener(this);
 }

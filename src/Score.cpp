@@ -24,7 +24,7 @@ std::string getNoteName(int note) {
     }
 }
 
-Score::Score(Wheeloin& instrument, Renderer& renderer) : instrument(instrument), renderer(renderer), position(0.0) {
+Score::Score(Wheeloin& instrument, Renderer& renderer) : instrument(instrument), renderer(renderer), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -32,65 +32,95 @@ Score::Score(Wheeloin& instrument, Renderer& renderer) : instrument(instrument),
     glLineWidth(1.5f);
 }
 
-void Score::setupOpenGlMatrices(float note, float time) {
-    glMatrixMode(GL_PROJECTION); //Open the projection matrix as current
-    glLoadIdentity(); //clear its contents to an identity matrix (which doesn't change anything when applied)
-    gluPerspective(60, 1.0, 0.1, 1000.0);
-    //this function is from the very useful glu library .
-    //It configures the projection matrix to the desired parameters
-    
-    glMatrixMode(GL_MODELVIEW); //select the matrix
-    glLoadIdentity(); //clear ...
-    gluLookAt ( note , 1, -time, note, 0, -time-1, 0, 1, 0 );
+float Score::getAspect() {
+    return float(renderer.getDisplayWidth()) / float(renderer.getDisplayHeight());
 }
 
-void Score::draw() {
-    WheeloinConfiguration& c = instrument.getConfiguration();
-    double middle = 0.5*(c.maxNote - c.minNote) + c.minNote;
-    
-    //al_clear_to_color(al_map_rgb(0,0,0));
+void Score::setProjection() {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(90, getAspect(), 0.1, 1000.0);
+}
+
+void Score::setCamera(float note, float time) {
+    glMatrixMode(GL_MODELVIEW); //select the matrix
+    glLoadIdentity(); //clear ...
+    gluLookAt(note , 1, -time, note, 0, -time-0.9, 0, 1, 0);
+}
+
+void Score::setView() {
+    setProjection();
+    setCamera(float(instrument.getInputScaleNote())*gridWidth, position);
+}
+
+void Score::clear() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    
-    setupOpenGlMatrices(float((instrument.getInputScaleNote()-middle)*0.1f), float(position));
-    position += 0.01f;
-    glBegin(GL_LINES); //lookup for more options but GL_LINES tels GL that you'll be supplying a series of lines (via points)
-    
+}
+
+void Score::drawGrid() {
+    WheeloinConfiguration& c = instrument.getConfiguration();
     glColor3f(0.2f, 0.2f, 0.2f);
-    
-    for (int i = -50; i < 50; ++i) {
-        glVertex3f(i*0.1f-0.05f,0.0f,100.0f);
-        glVertex3f(i*0.1f-0.05f,0.0f,-position-100.0f);
+    glBegin(GL_LINES);
+    for (int i = c.minNote; i <= c.maxNote+1; ++i) {
+        float x = (i-0.5f)*gridWidth;
+        glVertex3f(x, 0.0f, 100.0f);
+        glVertex3f(x ,0.0f, -position-500.0f);
     }
-    
-    for (int i = -500; i < 500; ++i) {
-        glVertex3f(-100,0,i);
-        glVertex3f(100,0,i);
+    for (int i = 0; i > -500; --i) {
+        float z = i*gridLength;
+        glVertex3f(-100,0,z);
+        glVertex3f(100,0,z);
     }
-    
-    glEnd(); //this will draw a single line watched from the camera that we just set up
-    
-    glBegin(GL_QUADS);
-    
+    glEnd();
+}
+
+void Score::drawNotes() {
     glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
-    
+    glBegin(GL_QUADS);
     glVertex3f(-0.05f, 0.0f, -50.0f);
     glVertex3f(0.05f, 0.0f, -50.0f);
     glVertex3f(0.05f, 0.0f, -100.0f);
     glVertex3f(-0.05f, 0.0f, -100.0f);
-    
+    glEnd();
+}
+
+void Score::drawCursor() {
+    glColor3f(0.7f, 0.8f, 1.0f);
+    float radius = 0.5f*gridWidth*float(instrument.getVolume());
+    float centerX = float(instrument.getInputScaleNote())*gridWidth;
+    float centerZ = -  position - 0.1f;
+    glBegin(GL_LINE_LOOP);
+    for (int i=0; i < 90; ++i)
+    {
+        float degInRad = i*4*0.0174532925f;
+        glVertex3f(cosf(degInRad)*radius+centerX,0,sinf(degInRad)*radius + centerZ);
+    }
     glEnd();
     
+    glPointSize(5.0f);
+    glBegin(GL_POINTS);
+    glVertex3f(centerX, 0, centerZ);
+    glEnd();
+}
+
+void Score::draw() {
+    clear();
     
-    glFlush();
+    setView();
+    drawGrid();
+    drawNotes();
+    drawCursor();
     
+    drawTextOverlay();
     
+    position += 0.01f;
 }
 
 void Score::drawTextOverlay() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, 1440, 900, 0.0, -1.0, 10.0);
+    glOrtho(0.0, renderer.getDisplayWidth(), renderer.getDisplayHeight(), 0.0, -1.0, 10.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glDisable(GL_CULL_FACE);

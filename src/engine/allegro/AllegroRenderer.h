@@ -27,6 +27,9 @@ public:
     virtual void drawText(float x, float y, const std::string& text);
     virtual void updateDisplay();
     
+    virtual int getDisplayWidth();
+    virtual int getDisplayHeight();
+    
 private:
     void init(int width, int height, bool fullScreen = false);
     
