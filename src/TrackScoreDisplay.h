@@ -1,30 +1,29 @@
 //
-//  ScoreDisplay.h
+//  TrackScoreDisplay.h
 //  steeringwheel
 //
-//  Created by Hannes Widmoser on 10/18/13.
+//  Created by Hannes Widmoser on 10/19/13.
 //  Copyright (c) 2013 Hannes Widmoser. All rights reserved.
 //
 
-#ifndef __steeringwheel__ScoreDisplay__
-#define __steeringwheel__ScoreDisplay__
+#ifndef __steeringwheel__TrackScoreDisplay__
+#define __steeringwheel__TrackScoreDisplay__
 
 #include <iostream>
 #include <Wheeloin.h>
 #include <Score.h>
+#include <Camera.h>
 
-class ScoreDisplay {
+class TrackScoreDisplay {
 public:
-    ScoreDisplay(Wheeloin& instrument, System& system, Score& score);
+    TrackScoreDisplay(Wheeloin& instrument, System& system, Score& score);
     void draw();
 private:
     float getAspect();
     
     void setProjection();
-    void setCamera(float note, float time);
-    void setView();
-    
-    void processInput();
+    void setCamera(float note, float time, float delta);
+    void setView(float delta);
     
     void clear();
     
@@ -32,6 +31,9 @@ private:
     void drawNotes();
     void drawCursor();
     void drawTextOverlay(float delta);
+    
+    float getAngle(int note);
+    
     
     Wheeloin& instrument;
     System& system;
@@ -41,6 +43,8 @@ private:
     float position;
     float gridWidth;
     float gridLength;
+    
+    Camera camera;
 };
 
-#endif /* defined(__steeringwheel__ScoreDisplay__) */
+#endif /* defined(__steeringwheel__TrackScoreDisplay__) */

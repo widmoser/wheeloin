@@ -9,6 +9,18 @@
 #include "Scale.h"
 #include <cmath>
 
+std::string names[] = {
+    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"
+};
+
+std::string getNoteName(int note) {
+    if (note > 4) {
+        return names[(note-4) % 12];
+    } else {
+        return "";
+    }
+}
+
 Scale::Scale(int start) {
     data.push_back(start);
 }

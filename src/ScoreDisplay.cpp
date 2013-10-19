@@ -10,19 +10,13 @@
 #include <sstream>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
+#include <Scale.h>
 
-std::string names[] = {
-    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"
+float voiceColors[3][3] = {
+    {1.0f, 0.0f, 0.0f},
+    {1.0f, 1.0f, 0.0f},
+    {0.0f, 0.0f, 1.0f}
 };
-
-
-std::string getNoteName(int note) {
-    if (note > 4) {
-        return names[(note-4) % 12];
-    } else {
-        return "";
-    }
-}
 
 ScoreDisplay::ScoreDisplay(Wheeloin& instrument, System& system, Score& score) : instrument(instrument), system(system), renderer(system.getRenderer()), score(score), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
     glEnable(GL_LINE_SMOOTH);
@@ -51,6 +45,24 @@ void ScoreDisplay::setCamera(float note, float time) {
 void ScoreDisplay::setView() {
     setProjection();
     setCamera(float(instrument.getInputScaleNote())*gridWidth, position);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    glLineWidth(1.5f);
+}
+
+void ScoreDisplay::processInput() {
+    if (system.getJoystick().isButtonDown(0) || system.getJoystick().isButtonDown(1)) {
+        Note& n = score.nextNote();
+        std::cout << round(instrument.getInputScaleNote()) << " == " << n.value << "; " << instrument.getActiveVoice() << " == " << n.voice << std::endl;
+        if (round(instrument.getInputScaleNote()) == n.value && instrument.getActiveVoice() == n.voice) {
+            if (!n.activated) {
+                n.activated = true;
+                score.popNote();
+            }
+        }
+    }
 }
 
 void ScoreDisplay::clear() {
@@ -76,12 +88,16 @@ void ScoreDisplay::drawGrid() {
 }
 
 void ScoreDisplay::drawNotes() {
-    glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
+    const std::vector<Note> notes = score.getNotes();
     glBegin(GL_QUADS);
-    glVertex3f(-0.05f, 0.0f, -50.0f);
-    glVertex3f(0.05f, 0.0f, -50.0f);
-    glVertex3f(0.05f, 0.0f, -100.0f);
-    glVertex3f(-0.05f, 0.0f, -100.0f);
+    for (std::vector<Note>::const_iterator i = notes.begin(); i != notes.end(); ++i) {
+        Note n = *i;
+        glColor4f(voiceColors[n.voice][0], voiceColors[n.voice][1], voiceColors[n.voice][2], n.activated ? 1.0f : 0.35f);
+        glVertex3f((n.value - n.startVolume*0.5f)*gridWidth, 0.0f, float(-n.start));
+        glVertex3f((n.value + n.startVolume*0.5f)*gridWidth, 0.0f, float(-n.start));
+        glVertex3f((n.value + n.endVolume*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
+        glVertex3f((n.value - n.endVolume*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
+    }
     glEnd();
 }
 
@@ -105,6 +121,7 @@ void ScoreDisplay::drawCursor() {
 }
 
 void ScoreDisplay::draw() {
+    processInput();
     clear();
     
     setView();

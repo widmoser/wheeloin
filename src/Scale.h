@@ -12,6 +12,10 @@
 #include <iostream>
 #include <vector>
 
+extern std::string names[];
+
+std::string getNoteName(int note);
+
 class Scale {
 public:
     Scale(int start = 0);

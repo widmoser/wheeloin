@@ -13,6 +13,7 @@
 #include "WheeloinSynth.h"
 #include <Wheeloin.h>
 #include <ScoreDisplay.h>
+#include <TrackScoreDisplay.h>
 #include <Scale.h>
 #include <Exception.h>
 

@@ -11,12 +11,13 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <string>
 
 class Note {
 public:
     Note(int voice, int value, double start, double length, double startVolume, double endVolume);
-    Note() {}
+    Note() : activated(false) {}
     
     int voice;
     int value;
@@ -24,6 +25,8 @@ public:
     double length;
     double startVolume;
     double endVolume;
+    
+    bool activated;
 };
 
 class Score {
@@ -31,8 +34,14 @@ public:
     Score(const std::string& filename);
     
     const std::vector<Note>& getNotes();
+    
+    Note& nextNote();
+    void popNote();
+    bool noteLeft();
+    
 private:
     std::vector<Note> notes;
+    int currentNote;
 };
 
 #endif /* defined(__steeringwheel__Score__) */
