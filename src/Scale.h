@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 extern std::string names[];
 
@@ -20,6 +21,7 @@ class Scale {
 public:
     Scale(int start = 0);
     int getNote(double scaleNote) const;
+    int getScaleNote(double note, bool& accidental) const;
     
     Scale& operator|(int arg);
     

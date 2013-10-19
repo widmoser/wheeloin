@@ -33,6 +33,18 @@ int Scale::getNote(double scalenote) const {
     return int(octave*12 + data[note]);
 }
 
+int Scale::getScaleNote(double note, bool& accidental) const {
+    int intNote = int(round(note));
+    int relNote = intNote % 12;
+    int octave = intNote / 12;
+    for (std::vector<int>::const_iterator i = data.begin(); i != data.end(); ++i) {
+        if (*i > relNote) {
+            return int(octave*data.size() + (i-1-data.begin()));
+        }
+    }
+    return int(octave*data.size() + (data.size() - 1));
+}
+
 Scale& Scale::operator|(int arg) {
     data.push_back(arg);
     return *this;

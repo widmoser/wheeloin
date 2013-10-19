@@ -22,8 +22,10 @@ void Wheeloin::setTriggered(int voice, bool value) {
 void Wheeloin::onButtonDown(int button) {
     if (button == 8) {
         synth.setActiveVoice(synth.getActiveVoice()-1);
+        note = -1;
     } else if (button == 9) {
         synth.setActiveVoice(synth.getActiveVoice()+1);
+        note = -1;
     } else if (button == 1 || button == 0) {
         if (triggered[synth.getActiveVoice()]) {
             synth.noteOn(note, amplitude*128.0);
