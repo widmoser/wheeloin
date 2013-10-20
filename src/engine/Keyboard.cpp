@@ -16,8 +16,14 @@ void Keyboard::unregisterButtonListener(EventListener* listener) {
     listeners.erase(std::find(listeners.begin(), listeners.end(), listener));
 }
 
-void Keyboard::notifyButtonListeners(int button) {
+void Keyboard::notifyButtonListenersDown(int button) {
     for (std::vector<EventListener*>::iterator i = listeners.begin(); i != listeners.end(); ++i) {
         (*i)->onButtonDown(button);
+    }
+}
+
+void Keyboard::notifyButtonListenersUp(int button) {
+    for (std::vector<EventListener*>::iterator i = listeners.begin(); i != listeners.end(); ++i) {
+        (*i)->onButtonUp(button);
     }
 }

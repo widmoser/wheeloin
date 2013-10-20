@@ -34,11 +34,11 @@ int main(int argc, char** argv)
         system.getRenderer().setTextFont("OpenSans-Regular.ttf", 20);
         system.getRenderer().setTextColor(255, 255, 255);
         
+        Score score("test.score");
         WheeloinSynth synth;
         WheeloinConfiguration config(Scales::MAJOR, 25, 54);
-        Wheeloin wheeloin(synth, system, config);
+        Wheeloin wheeloin(synth, system, config, score);
         
-        Score score("test.score");
         ScoreDisplay scoreDisplay(wheeloin, system, score);
         
         synth.start();

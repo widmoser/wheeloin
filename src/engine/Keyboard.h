@@ -15,6 +15,7 @@
 class EventListener {
 public:
     virtual void onButtonDown(int button) = 0;
+    virtual void onButtonUp(int button) = 0;
 };
 
 class Keyboard {
@@ -29,8 +30,8 @@ public:
     
     virtual void unregisterButtonListener(EventListener* listener);
     
-    void notifyButtonListeners(int button);
-    
+    void notifyButtonListenersDown(int button);
+    void notifyButtonListenersUp(int button);
 private:
     
     std::vector<EventListener*> listeners;

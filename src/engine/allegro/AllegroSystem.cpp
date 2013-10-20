@@ -51,9 +51,11 @@ void AllegroSystem::updateInput() {
     joystick->update();
     ALLEGRO_EVENT event = eventQueue->getNextEvent();
     if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-        keyboard->notifyButtonListeners(event.keyboard.keycode);
+        keyboard->notifyButtonListenersDown(event.keyboard.keycode);
     } else if (event.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN) {
-        joystick->notifyButtonListeners(event.joystick.button);
+        joystick->notifyButtonListenersDown(event.joystick.button);
+    } else if (event.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_UP) {
+        joystick->notifyButtonListenersUp(event.joystick.button);
     }
 }
 

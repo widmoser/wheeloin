@@ -16,6 +16,7 @@
 #include <engine/System.h>
 #include <sound/Synthesizer.h>
 #include <Scale.h>
+#include <Score.h>
 
 class WheeloinConfiguration {
 public:
@@ -28,10 +29,11 @@ public:
 
 class Wheeloin : public EventListener {
 public:
-    Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration);
+    Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration, Score& score);
     
     void setTriggered(int voice, bool value = true);
     void onButtonDown(int button);
+    void onButtonUp(int button);
     
     double getInputScaleNote() { return inputScaleNote; }
     int getInputNote() { return inputNote; }
@@ -65,6 +67,7 @@ private:
     WheeloinConfiguration conf;
     std::vector<bool> triggered;
     
+    Score& score;
 };
 
 #endif /* defined(__steeringwheel__Wheeloin__) */

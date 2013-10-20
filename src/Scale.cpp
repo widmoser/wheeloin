@@ -39,9 +39,11 @@ int Scale::getScaleNote(double note, bool& accidental) const {
     int octave = intNote / 12;
     for (std::vector<int>::const_iterator i = data.begin(); i != data.end(); ++i) {
         if (*i > relNote) {
+            accidental = *(i-1) != relNote;
             return int(octave*data.size() + (i-1-data.begin()));
         }
     }
+    accidental = *(data.end()-1) != relNote;
     return int(octave*data.size() + (data.size() - 1));
 }
 

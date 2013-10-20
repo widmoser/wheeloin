@@ -55,7 +55,6 @@ void ScoreDisplay::setView() {
 void ScoreDisplay::processInput() {
     if (system.getJoystick().isButtonDown(0) || system.getJoystick().isButtonDown(1)) {
         Note& n = score.nextNote();
-        std::cout << instrument.getInputNote() << " == " << n.value << "; " << instrument.getActiveVoice() << " == " << n.voice << std::endl;
         int note = instrument.getInputNote();
         if (system.getJoystick().isButtonDown(0)) {
             note += 1;
@@ -99,24 +98,25 @@ void ScoreDisplay::drawNotes() {
         glColor4f(voiceColors[n.voice][0], voiceColors[n.voice][1], voiceColors[n.voice][2], n.activated ? 1.0f : 0.35f);
         bool accidental = false;
         int scaleNote = instrument.getConfiguration().scale.getScaleNote(n.value, accidental);
-        glVertex3f((scaleNote - n.startVolume*0.5f)*gridWidth, 0.0f, float(-n.start));
-        glVertex3f((scaleNote + n.startVolume*0.5f)*gridWidth, 0.0f, float(-n.start));
-        glVertex3f((scaleNote + n.endVolume*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
-        glVertex3f((scaleNote - n.endVolume*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
+        glVertex3f((scaleNote - float(n.startVolume)*0.5f)*gridWidth, 0.0f, float(-n.start));
+        glVertex3f((scaleNote + float(n.startVolume)*0.5f)*gridWidth, 0.0f, float(-n.start));
+        glVertex3f((scaleNote + float(n.endVolume)*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
+        glVertex3f((scaleNote - float(n.endVolume)*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
     }
     glEnd();
 }
 
 void ScoreDisplay::drawCursor() {
     Note& n = score.nextNote();
-    int note = round(instrument.getInputScaleNote());
-    bool accidental;
-    float dist = system.getTime() - score.nextNote().start;
+    int note = int(round(instrument.getInputScaleNote()));
+    bool accidental = false;
+    float dist = float(system.getTime() - score.nextNote().start);
     float r = voiceColors[instrument.getActiveVoice()][0];
     float g = voiceColors[instrument.getActiveVoice()][1];
     float b = voiceColors[instrument.getActiveVoice()][2];
-    if (fabs(dist) < 0.1f && note == instrument.getConfiguration().scale.getScaleNote(n.value, accidental) && instrument.getActiveVoice() == n.voice) {
-        float relDist = 1.0f - fabs(dist)*10.0f;
+    int nextScaleNote = instrument.getConfiguration().scale.getScaleNote(n.value, accidental);
+    if (fabsf(dist) < 0.1f && note == nextScaleNote && instrument.getActiveVoice() == n.voice) {
+        float relDist = 1.0f - fabsf(dist)*10.0f;
         r = (1.0f - r)*relDist + r;
         g = (1.0f - g)*relDist + g;
         b = (1.0f - b)*relDist + b;
@@ -137,6 +137,15 @@ void ScoreDisplay::drawCursor() {
     glBegin(GL_POINTS);
     glVertex3f(centerX, 0, centerZ);
     glEnd();
+    
+    if (accidental) {
+        glBegin(GL_LINES);
+        glVertex3f(centerX - radius, 0, centerZ - radius);
+        glVertex3f(centerX + radius, 0, centerZ + radius);
+        glVertex3f(centerX + radius, 0, centerZ - radius);
+        glVertex3f(centerX - radius, 0, centerZ + radius);
+        glEnd();
+    }
 }
 
 void ScoreDisplay::draw() {
