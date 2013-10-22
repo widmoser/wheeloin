@@ -36,7 +36,7 @@ int main(int argc, char** argv)
         Score score("test.score");
         Piece piece(system, score);
         
-        RoundComputation computation(system.getRenderer(), 8);
+        RoundComputation computation(system, 8);
         
         Pause pause(system);
         
@@ -48,19 +48,22 @@ int main(int argc, char** argv)
         phases.front()->init();
         while (running) {
             system.updateInput();
-            if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE))
+            if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE)) {
                 running = false;
-            if (!phases.front()->frame()) {
-                if (phases.size() > 1) {
-                    // next phase
-                    phases.front()->finalize();
-                    phases.pop();
-                    phases.front()->init();
-                } else {
-                    running = false;
+                phases.front()->onCancel();
+            } else {
+                if (!phases.front()->frame()) {
+                    if (phases.size() > 1) {
+                        // next phase
+                        phases.front()->finalize();
+                        phases.pop();
+                        phases.front()->init();
+                    } else {
+                        running = false;
+                    }
                 }
+                system.getRenderer().updateDisplay();
             }
-            system.getRenderer().updateDisplay();
         }
         
         return 0;

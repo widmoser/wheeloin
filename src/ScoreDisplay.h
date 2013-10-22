@@ -13,9 +13,11 @@
 #include <Wheeloin.h>
 #include <Score.h>
 
+class Piece;
+
 class ScoreDisplay {
 public:
-    ScoreDisplay(Wheeloin& instrument, System& system, Score& score);
+    ScoreDisplay(Piece& piece, Score& score);
     void draw();
     void init();
 private:
@@ -35,9 +37,10 @@ private:
     void drawTextOverlay(float delta);
     
     Wheeloin& instrument;
-    System& system;
     Renderer& renderer;
     Score& score;
+    System& system;
+    Piece& piece;
     
     float position;
     float gridWidth;

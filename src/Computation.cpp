@@ -9,11 +9,12 @@
 #include "Computation.h"
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
-
+#include <sstream>
+#include <iomanip>
 
 #include <engine/allegro/AllegroThread.h>
 
-Computation::Computation(Renderer& renderer, int threadCount) : renderer(renderer), threadCount(threadCount) {
+Computation::Computation(System& system, int threadCount) : Phase(system), renderer(system.getRenderer()), threadCount(threadCount) {
     renderer.setTextFont("OpenSans-Regular.ttf", 60);
     for (int i = 0; i < threadCount; ++i) {
         ComputationChunk* c = new ComputationChunk(*this, i);
@@ -32,6 +33,7 @@ Computation::~Computation() {
 }
 
 void Computation::init() {
+    Phase::init();
     renderer.setTextFont("OpenSans-Regular.ttf", 60);
     for (std::vector<Thread*>::iterator i = threads.begin(); i != threads.end(); ++i) {
         (*i)->start();
@@ -45,6 +47,14 @@ bool Computation::frame() {
     }
     draw(elements);
     return elements < getNumberOfElements();
+}
+
+void Computation::onCancel() {
+    Phase::onCancel();
+    for (std::vector<Thread*>::iterator i = threads.begin(); i != threads.end(); ++i) {
+        (*i)->cancel();
+        (*i)->join();
+    }
 }
 
 void Computation::draw(int elements) {
@@ -90,10 +100,13 @@ void Computation::draw(int elements) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glDisable(GL_CULL_FACE);
-    
-    renderer.drawText(renderer.getDisplayWidth()*0.5f, 300, text);
-}
 
-void Computation::setText(const std::string& str) {
-    text = str;
+    renderer.drawText(renderer.getDisplayWidth()*0.5f, 300, getText(elements));
+    
+    std::stringstream clock;
+    double time = getTime();
+    int minutes = int(time / 60.0);
+    int seconds = time - minutes*60;
+    clock << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
+    renderer.drawText(renderer.getDisplayWidth()*0.5f, renderer.getDisplayHeight()*0.5f + 100, clock.str());
 }

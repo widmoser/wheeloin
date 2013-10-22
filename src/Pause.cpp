@@ -12,7 +12,7 @@
 #include <OpenGL/glu.h>
 
 
-Pause::Pause(System& system) : system(system) {
+Pause::Pause(System& system) : Phase(system), system(system) {
     
 }
 

@@ -19,21 +19,21 @@ class ComputationChunk;
 
 class Computation : public Phase {
 public:
-    Computation(Renderer& renderer, int threadCount);
+    Computation(System& system, int threadCount);
     virtual ~Computation();
     void init();
     virtual bool frame();
+    void onCancel();
     
     
-    virtual void processChunk(int thread, ComputationChunk& runnable) = 0;
+    virtual void processChunk(int threadNumber, ComputationChunk& runnable, const Thread& thread) = 0;
 protected:
-    void setText(const std::string& str);
     virtual int getNumberOfElements() = 0;
+    virtual std::string getText(int count) = 0;
     
     int threadCount;
 private:
     void draw(int elements);
-    std::string text;
     Renderer& renderer;
     std::vector<Thread*> threads;
     std::vector<ComputationChunk*> chunks;
@@ -43,7 +43,7 @@ class ComputationChunk : public Runnable {
 public:
     ComputationChunk(Computation& computation, int threadNumber) : computation(computation), threadNumber(threadNumber), progress(0) {}
     void run(const Thread& thread) {
-        computation.processChunk(threadNumber, *this);
+        computation.processChunk(threadNumber, *this, thread);
     }
     int getProgress() {
         return progress;

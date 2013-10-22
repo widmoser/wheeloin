@@ -8,7 +8,7 @@
 
 #include "Piece.h"
 
-Piece::Piece(System& system, Score& score) : wheeloin(synth, system, WheeloinConfiguration(Scales::MAJOR, 15, 54), score), scoreDisplay(wheeloin, system, score) {
+Piece::Piece(System& system, Score& score) : Phase(system), wheeloin(synth, system, WheeloinConfiguration(Scales::MAJOR, 15, 54), score), scoreDisplay(*this, score) {
     synth.start();
 }
 
@@ -18,6 +18,7 @@ Piece::~Piece() {
 
 
 void Piece::init() {
+    Phase::init();
     scoreDisplay.init();
 }
 
@@ -25,4 +26,16 @@ bool Piece::frame() {
     wheeloin.processInput();
     scoreDisplay.draw();
     return true;
+}
+
+WheeloinSynth& Piece::getSynth() {
+    return synth;
+}
+
+Wheeloin& Piece::getInstrument() {
+    return wheeloin;
+}
+
+ScoreDisplay& Piece::getDisplay() {
+    return scoreDisplay;
 }

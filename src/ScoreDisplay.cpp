@@ -11,6 +11,7 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <Scale.h>
+#include <Piece.h>
 
 float voiceColors[3][3] = {
     {1.0f, 0.0f, 0.0f},
@@ -18,7 +19,7 @@ float voiceColors[3][3] = {
     {0.0f, 0.0f, 1.0f}
 };
 
-ScoreDisplay::ScoreDisplay(Wheeloin& instrument, System& system, Score& score) : instrument(instrument), system(system), renderer(system.getRenderer()), score(score), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
+ScoreDisplay::ScoreDisplay(Piece& piece, Score& score) : piece(piece), system(piece.getSystem()), instrument(piece.getInstrument()), renderer(piece.getSystem().getRenderer()), score(score), position(0.0f), gridWidth(0.3f), gridLength(1.0f) {
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -161,8 +162,8 @@ void ScoreDisplay::draw() {
     drawNotes();
     drawCursor();
     
-    drawTextOverlay(float(system.getTime()) - position);
-    position = float(system.getTime());
+    drawTextOverlay(float(piece.getTime()) - position);
+    position = float(piece.getTime());
 }
 
 void ScoreDisplay::drawTextOverlay(float delta) {

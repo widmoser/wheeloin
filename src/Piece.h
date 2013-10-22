@@ -23,6 +23,10 @@ public:
     ~Piece();
     void init();
     virtual bool frame();
+    
+    WheeloinSynth& getSynth();
+    Wheeloin& getInstrument();
+    ScoreDisplay& getDisplay();
 private:
     WheeloinSynth synth;
     Wheeloin wheeloin;

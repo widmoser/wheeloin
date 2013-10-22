@@ -15,14 +15,13 @@
 
 class RoundComputation : public Computation {
 public:
-    RoundComputation(Renderer& renderer, int threads);
-    void processChunk(int thread, ComputationChunk& chunk);
+    RoundComputation(System& system, int threads);
+    void processChunk(int threadNumber, ComputationChunk& chunk, const Thread& thread);
 protected:
-    int getNumberOfElements() {
-        return 479001600;
-    }
+    int getNumberOfElements();
+    std::string getText(int count);
 private:
-    void processSubSeries(int nr, ComputationChunk& chunk, int baseProgress);
+    void processSubSeries(int nr, ComputationChunk& chunk, int baseProgress, const Thread& thread);
     
     void generateSequence(int s[3][12], int t[12]);
     double scoreTriad(int a, int b, int c);

@@ -8,7 +8,17 @@
 
 #include "RoundComputation.h"
 
-RoundComputation::RoundComputation(Renderer& renderer, int threads) : Computation(renderer, threads) {
+RoundComputation::RoundComputation(System& system, int threads) : Computation(system, threads) {
+}
+
+int RoundComputation::getNumberOfElements()  {
+    return 479001600;
+}
+
+std::string RoundComputation::getText(int count) {
+    std::stringstream txt;
+    txt << "Processing twelve tone series: " << count/1000000 << " Mio.";
+    return txt.str();
 }
 
 double rating[12] = {
@@ -47,7 +57,7 @@ double RoundComputation::score(int seq[3][12]) {
     return s;
 }
 
-void RoundComputation::processSubSeries(int nr, ComputationChunk& chunk, int baseProgress) {
+void RoundComputation::processSubSeries(int nr, ComputationChunk& chunk, int baseProgress, const Thread& thread) {
     int s[3][12];
     int series[12];
     series[0] = nr;
@@ -71,17 +81,14 @@ void RoundComputation::processSubSeries(int nr, ComputationChunk& chunk, int bas
             // report progress:
             chunk.setProgress(baseProgress + c);
         }
-    } while (std::next_permutation(series+1, series+12));
-    count += c;
-    std::stringstream txt;
-    txt << "Processing twelve tone series: " << count/1000000 << " Mio.";
-    setText(txt.str());
+    } while (!thread.isCancelled() && std::next_permutation(series+1, series+12));
+    chunk.setProgress(baseProgress + c);
 }
 
-void RoundComputation::processChunk(int thread, ComputationChunk& chunk) {
+void RoundComputation::processChunk(int threadNumber, ComputationChunk& chunk, const Thread& thread) {
     for (int i = 0; i < 12; ++i) {
-        if (i % threadCount == thread) {
-            processSubSeries(i, chunk, chunk.getProgress());
+        if (i % threadCount == threadNumber) {
+            processSubSeries(i, chunk, chunk.getProgress(), thread);
         }
     }
 }
