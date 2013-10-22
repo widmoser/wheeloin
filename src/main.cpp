@@ -21,6 +21,8 @@
 
 #include "VolumeSine.h"
 
+//#include "MusicNoteLib.h"
+
 using namespace stk;
 using namespace std;
 
@@ -29,6 +31,8 @@ int main(int argc, char** argv)
     try {
         volatile bool running = true;
         
+        //MusicNoteLib::PlayMusicString("C D E F G A B"); // Play the Music Notes on the default MIDI output port
+        
         AllegroSystem system(1440, 900);
         system.getRenderer().setTextFont("OpenSans-Regular.ttf", 20);
         system.getRenderer().setTextColor(255, 255, 255);
@@ -36,7 +40,11 @@ int main(int argc, char** argv)
         Score score("test.score");
         Piece piece(system, score);
         
-        RoundComputation computation(system, 8);
+        double rythm[12] = {
+          2, 1, 1, 1, 1, 1, 0.5, 0.5, 1, 1, 1, 1
+        };
+        Parameters params(3, 4.0, rythm);
+        RoundComputation computation(system, params, 8);
         
         Pause pause(system);
         
