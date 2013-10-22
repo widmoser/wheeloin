@@ -29,6 +29,7 @@
 #include <Rhodey.h>
 #include <Wurley.h>
 #include "SampleInstrument.h"
+#include <RoundInstrument.h>
 #include "Overdrive.h"
 
 class WheeloinSynth : public StkSynthesizer {
@@ -40,6 +41,8 @@ private:
     VoicForm voices;
     VoicForm sing;
     FMVoices fmVoices;
+    FMVoices fmVoices1;
+    FMVoices fmVoices2;
     Rhodey rhodey;
     TubeBell bell;
     
@@ -50,6 +53,8 @@ private:
     SampleInstrument sample2;
     SampleInstrument sample3;
     SampleInstrument sample4;
+    
+    RoundInstrument round;
     
 };
 

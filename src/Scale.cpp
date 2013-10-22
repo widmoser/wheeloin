@@ -14,11 +14,7 @@ std::string names[] = {
 };
 
 std::string getNoteName(int note) {
-    if (note > 4) {
-        return names[(note-4) % 12];
-    } else {
-        return "";
-    }
+    return names[note % 12];
 }
 
 Scale::Scale(int start) {

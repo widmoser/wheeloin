@@ -14,6 +14,8 @@
 #include <queue>
 #include <string>
 
+#include <engine/System.h>
+
 class Note {
 public:
     Note(int voice, int value, double start, double length, double startVolume, double endVolume);
@@ -43,5 +45,7 @@ private:
     std::vector<Note> notes;
     int currentNote;
 };
+
+std::vector<Note> generateRound(System& system);
 
 #endif /* defined(__steeringwheel__Score__) */

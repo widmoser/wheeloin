@@ -17,6 +17,7 @@ class ScoreDisplay {
 public:
     ScoreDisplay(Wheeloin& instrument, System& system, Score& score);
     void draw();
+    void init();
 private:
     float getAspect();
     

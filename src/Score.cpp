@@ -9,6 +9,11 @@
 #include "Score.h"
 #include <Exception.h>
 #include <fstream>
+#include <algorithm>
+
+
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
 
 Note::Note(int voice, int value, double start, double length, double startVolume, double endVolume) : voice(voice), value(value), start(start), length(length), startVolume(startVolume), endVolume(endVolume) {
 }

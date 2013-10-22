@@ -51,7 +51,7 @@ void AllegroRenderer::setTextFont(const std::string& file, int size) {
 }
 
 void AllegroRenderer::drawText(float x, float y, const std::string& text) {
-    al_draw_text(textFont, textColor, x, y, 0, text.c_str());
+    al_draw_text(textFont, textColor, x, y, ALLEGRO_ALIGN_CENTRE, text.c_str());
 }
 
 void AllegroRenderer::updateDisplay() {

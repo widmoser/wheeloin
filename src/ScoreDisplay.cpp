@@ -26,6 +26,10 @@ ScoreDisplay::ScoreDisplay(Wheeloin& instrument, System& system, Score& score) :
     glLineWidth(1.5f);
 }
 
+void ScoreDisplay::init() {
+    renderer.setTextFont("OpenSans-Regular.ttf", 20);
+}
+
 float ScoreDisplay::getAspect() {
     return float(renderer.getDisplayWidth()) / float(renderer.getDisplayHeight());
 }

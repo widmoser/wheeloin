@@ -45,6 +45,8 @@ public:
     void processInput();
     
     WheeloinConfiguration& getConfiguration() { return conf; }
+    
+    
   
 private:
     

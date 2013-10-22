@@ -10,12 +10,11 @@
 #include "engine/allegro/AllegroSystem.h"
 #include "engine/Keyboard.h"
 #include "engine/Joystick.h"
-#include "WheeloinSynth.h"
-#include <Wheeloin.h>
-#include <ScoreDisplay.h>
 #include <TrackScoreDisplay.h>
-#include <Scale.h>
 #include <Exception.h>
+#include <Piece.h>
+#include <RoundComputation.h>
+#include <Pause.h>
 
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -35,22 +34,34 @@ int main(int argc, char** argv)
         system.getRenderer().setTextColor(255, 255, 255);
         
         Score score("test.score");
-        WheeloinSynth synth;
-        WheeloinConfiguration config(Scales::MAJOR, 25, 54);
-        Wheeloin wheeloin(synth, system, config, score);
+        Piece piece(system, score);
         
-        ScoreDisplay scoreDisplay(wheeloin, system, score);
+        RoundComputation computation(system.getRenderer(), 8);
         
-        synth.start();
+        Pause pause(system);
+        
+        std::queue<Phase*> phases;
+        phases.push(&computation);
+        phases.push(&pause);
+        phases.push(&piece);
+        
+        phases.front()->init();
         while (running) {
             system.updateInput();
             if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE))
                 running = false;
-            wheeloin.processInput();
-            scoreDisplay.draw();
+            if (!phases.front()->frame()) {
+                if (phases.size() > 1) {
+                    // next phase
+                    phases.front()->finalize();
+                    phases.pop();
+                    phases.front()->init();
+                } else {
+                    running = false;
+                }
+            }
             system.getRenderer().updateDisplay();
         }
-        synth.stop();
         
         return 0;
     } catch (Exception e) {

@@ -30,7 +30,7 @@ void Wheeloin::onButtonDown(int button) {
         note = -1;
     } else if (button == 1 || button == 0) {
         if (triggered[synth.getActiveVoice()]) {
-            synth.noteOn(note, amplitude*128.0);
+            synth.noteOn(note, amplitude*64.0);
         } else if (note == synth.getNote()) {
             synth.noteOff();
             noteOff = system.getTime();
@@ -38,7 +38,7 @@ void Wheeloin::onButtonDown(int button) {
     } else if (button >= 2) {
         int g = button+1;
         if (!synth.isNoteOn(g)) {
-            synth.noteOn(39, 128.0, g);
+            synth.noteOn(39, 64.0, g);
         } else {
             synth.noteOff(g);
         }
@@ -46,12 +46,13 @@ void Wheeloin::onButtonDown(int button) {
 }
 
 void Wheeloin::onButtonUp(int button) {
-    if (button == 1 || button == 0) {
-        if (score.nextNote().voice != getActiveVoice()) {
-            synth.setActiveVoice(score.nextNote().voice);
-            note = -1;
-        }
-    }
+// AUTOMATIC:
+//    if (button == 1 || button == 0) {
+//        if (score.nextNote().voice != getActiveVoice()) {
+//            synth.setActiveVoice(score.nextNote().voice);
+//            note = -1;
+//        }
+//    }
 }
 
 void Wheeloin::processInput() {
@@ -67,7 +68,7 @@ void Wheeloin::processInput() {
     
     if (!triggered[synth.getActiveVoice()]) {
         if (system.getTime() - noteOff > 0.05 && note > 0) {
-            synth.noteOn(note, amplitude*128.0);
+            synth.noteOn(note, amplitude*64.0);
         }
     }
     
