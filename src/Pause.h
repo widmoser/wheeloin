@@ -16,6 +16,7 @@
 class Pause : public Phase {
 public:
     Pause(System& system);
+    void init();
     bool frame();
 private:
     System& system;

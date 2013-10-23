@@ -16,6 +16,12 @@ Pause::Pause(System& system) : Phase(system), system(system) {
     
 }
 
+void Pause::init() {
+    Phase::init();
+    system.getRenderer().setTextFont("OpenSans-Regular.ttf", 60);
+    system.getRenderer().setTextColor(255, 255, 255);
+}
+
 bool Pause::frame() {
     float w = system.getRenderer().getDisplayWidth();
     float h = system.getRenderer().getDisplayHeight();
