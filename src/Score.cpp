@@ -15,7 +15,11 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 
-Note::Note(int voice, int value, double start, double length, double startVolume, double endVolume) : voice(voice), value(value), start(start), length(length), startVolume(startVolume), endVolume(endVolume) {
+Note::Note(int voice, int value, double start, double length, double startVolume, double endVolume) : voice(voice), value(value), start(start), length(length), startVolume(startVolume), endVolume(endVolume), activated(false) {
+}
+
+Score::Score() : currentNote(0) {
+    
 }
 
 Score::Score(const std::string& filename) : currentNote(0) {
@@ -28,6 +32,10 @@ Score::Score(const std::string& filename) : currentNote(0) {
         input >> n.start >> n.length >> n.voice >> n.value >> n.startVolume >> n.endVolume;
         notes.push_back(n);
     }
+}
+
+void Score::addNote(Note& n) {
+    notes.push_back(n);
 }
 
 const std::vector<Note>& Score::getNotes() {

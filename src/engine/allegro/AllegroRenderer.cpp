@@ -36,10 +36,10 @@ AllegroRenderer::AllegroRenderer() {
 }
 
 AllegroRenderer::~AllegroRenderer() {
-    al_destroy_font(textFont);
+    //al_destroy_font(textFont);
     al_shutdown_ttf_addon();
     al_shutdown_font_addon();
-    al_destroy_display(display);
+    //al_destroy_display(display);
 }
 
 void AllegroRenderer::setTextColor(int r, int g, int b) {

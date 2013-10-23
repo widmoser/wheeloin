@@ -10,6 +10,29 @@
 #include <limits>
 #include <fstream>
 
+#define sign(x) (( x >> 31 ) | ( (unsigned int)( -x ) >> 31 ))
+
+const int BEST_N = 1000;
+
+int gcd(int a, int b)
+{
+    for (;;)
+    {
+        if (a == 0) return b;
+        b %= a;
+        if (b == 0) return a;
+        a %= b;
+    }
+}
+
+int fac(int n) {
+    int res = 1;
+    for (int i = 2; i <= n; ++i) {
+        res *= i;
+    }
+    return res;
+}
+
 Parameters::Parameters(int voiceCount, double offset, double noteLengths[12]) : voiceCount(voiceCount), noteLengths(noteLengths) {
     double minNoteLength = std::numeric_limits<double>::max();
     double overallLength = 0.0;
@@ -36,10 +59,17 @@ Parameters::Parameters(int voiceCount, double offset, double noteLengths[12]) : 
     }
     
     this->offset = int(offset / minNoteLength);
+    
+    tickWeight = new double[tickCount];
+    int measureLength = 4.0 / tickLength;
+    for (int i = 0; i < tickCount; ++i) {
+        tickWeight[i] = double(gcd(i, measureLength)) / double(measureLength);
+    }
 }
 
 Parameters::~Parameters() {
     delete ticks;
+    delete tickWeight;
 }
 
 int** Parameters::allocateEmptyScore() {
@@ -51,8 +81,13 @@ int** Parameters::allocateEmptyScore() {
 }
 
 const int REPORT_PROGRESS_COUNT = 100000;
+const int EXPLORATION_RANGE = 11;
 
-RoundComputation::RoundComputation(System& system, Parameters& parameters, int threads) : Computation(system, threads), parameters(parameters) {
+RoundComputation::RoundComputation(System& system, Parameters& parameters, int threads, Piece& next) : Computation(system, threads), parameters(parameters), queues(threads), result(BEST_N), next(next) {
+}
+
+RoundComputation::~RoundComputation() {
+    delete chords;
 }
 
 void RoundComputation::printNoteOff(std::ostream& out, double delta, int voice, int note) {
@@ -67,13 +102,120 @@ bool compareNotes(SkiniNote a, SkiniNote b) {
     return a.time < b.time;
 }
 
+void RoundComputation::init() {
+    initializeChords();
+    Computation::init();
+}
+
+int& RoundComputation::chord(int i, int j) {
+    return chords[i*12 + j];
+}
+
+void RoundComputation::setChord(int ch, int i, int j) {
+    int& chref = chord(i, j);
+    if (chref >= 0 && chref != ch)
+        std::cout << "WARNING Chord (" << i << ", " << j << ") has a conflicting assignment " << chref << " vs. " << ch << std::endl;
+    chref = ch;
+}
+
+void RoundComputation::initializeChord(int ch, int i, int j) {
+    setChord(ch, i, j);
+    int inv = 12 - (i+j);
+    if (inv < 12) {
+        setChord(ch, j, inv);
+        setChord(ch, inv, i);
+    }
+}
+
+void RoundComputation::initializeChords() {
+    chords = new int[12*12];
+    std::fill_n(chords, 144, -1);
+    initializeChord(PURE, 0, 0);
+    initializeChord(PURE, 0, 7);
+    initializeChord(FOURTH, 5, 5);
+    initializeChord(FOURTH, 0, 5);
+    initializeChord(MAJ, 4, 3);
+    initializeChord(MAJ, 0, 4);
+    initializeChord(MAJ, 0, 8);
+    initializeChord(MIN, 3, 4);
+    initializeChord(MIN, 0, 3);
+    initializeChord(MIN, 0, 9);
+    initializeChord(MAJ_7, 4, 6);
+    initializeChord(MIN_7, 3, 7);
+    initializeChord(DIM, 3, 3);
+    initializeChord(DIM, 0, 6);
+    initializeChord(PURE_7, 7, 3);
+    initializeChord(PURE_7, 0, 10);
+    initializeChord(DIM_7, 6, 4);
+    initializeChord(AUG, 4, 4);
+    initializeChord(MAJ_M7, 4, 7);
+    initializeChord(MIN_M7, 3, 8);
+    initializeChord(DIM_M7, 6, 5);
+    initializeChord(PURE_M7, 7, 4);
+    initializeChord(SOFT_CLUSTER, 0, 2);
+    initializeChord(SOFT_CLUSTER, 2, 2);
+    initializeChord(SOFT_CLUSTER, 2, 9);
+    initializeChord(HARD_CLUSTER, 0, 1);
+    initializeChord(HARD_CLUSTER, 0, 11);
+    initializeChord(HARD_CLUSTER, 1, 0);
+    initializeChord(HARD_CLUSTER, 1, 1);
+    initializeChord(HARD_CLUSTER, 1, 5);
+    initializeChord(HARD_CLUSTER, 1, 8);
+    initializeChord(HARD_CLUSTER, 1, 9);
+    initializeChord(HARD_CLUSTER, 1, 10);
+    initializeChord(HARD_CLUSTER, 1, 11);
+
+    // print unset chords:
+    for (int i = 0; i < 12; ++i) {
+        for (int j = 0; j < 12; ++j) {
+            if (chord(i, j) < 0 && i + j <= 12) {
+                std::cout << "WARNING Chord (" << i << ", " << j << ") is not defined" << std::endl;
+            }
+        }
+    }
+}
+
+Series RoundComputation::popMin() {
+    typedef std::vector<std::priority_queue<Series> >::iterator iter;
+    double min = std::numeric_limits<double>::max();
+    iter minIter;
+    for (iter i = queues.begin(); i != queues.end(); ++i) {
+        if (!i->empty() && i->top().score < min) {
+            min = i->top().score;
+            minIter = i;
+        }
+    }
+    Series res = minIter->top();
+    minIter->pop();
+    return res;
+}
+
+void RoundComputation::merge() {
+    typedef std::vector<std::priority_queue<Series> >::iterator iter;
+    unsigned long solutionCount = queues.size()*BEST_N;
+    
+    while (solutionCount > BEST_N) {
+        popMin();
+        solutionCount--;
+    }
+    
+    for (int i = 0; i < result.size(); ++i) {
+        result[i] = popMin();
+    }
+}
+
 void RoundComputation::finalize() {
     Computation::finalize();
     
-    for (int i = 0; i < 12; ++i) {
-        std::cout << bestSeries[i] << " ";
+    merge();
+    
+    for (std::vector<Series>::iterator i = result.begin(); i != result.end(); ++i) {
+        std::cout << "Score: " << i->score << "/" << parameters.tickCount << std::endl << "Series: ";
+        for (int j = 0; j < 12; ++j) {
+            std::cout << i->data[j] << " ";
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
     
     double timeOffset = parameters.offset*parameters.tickLength;
     int noteOffset = 0;
@@ -82,11 +224,17 @@ void RoundComputation::finalize() {
         sum += parameters.noteLengths[noteOffset++];
     }
     
+    int* resultSequence = result.back().data;
+    
+    double time = 0.0;
+    for (int i = 0; i < 12; ++i) {
+        Note n(0, resultSequence[i]+48, time, parameters.noteLengths[i], 1.0, 1.0);
+        bestScore.addNote(n);
+        time += parameters.noteLengths[i];
+    }
+    
     // output file
     std::ofstream out("score.ski");
-    
-    int** score = parameters.allocateEmptyScore();
-    fillScore(score, bestSeries);
     
     std::vector<SkiniNote> notes;
     int lastNote[3] = { -1, -1, -1 };
@@ -101,7 +249,7 @@ void RoundComputation::finalize() {
                 SkiniNote n;
                 n.time = time;
                 n.voice = j;
-                n.note = bestSeries[s]+48;
+                n.note = resultSequence[s]+48;
                 notes.push_back(n);
                 time += parameters.noteLengths[s];
             }
@@ -122,11 +270,19 @@ void RoundComputation::finalize() {
         lastNote[i->voice] = i->note;
         currentTime = i->time;
     }
+    
+    delete chords;
+    
+    
+    next.setScore(bestScore);
+}
+
+Score& RoundComputation::getScore() {
+    return bestScore;
 }
 
 int RoundComputation::getNumberOfElements()  {
-    //return 479001600;
-    return 43545600;
+    return 12*fac(EXPLORATION_RANGE-1);
 }
 
 std::string RoundComputation::getText(int count) {
@@ -137,6 +293,10 @@ std::string RoundComputation::getText(int count) {
 
 double rating[12] = {
     2.0, 0.0, 1.0, 3.0, 3.0, 2.0, 1.0, 2.0, 3.0, 3.0, 1.0, 0.0
+};
+
+double parallel[12] = {
+    0.7, 0.6, 0.4, 0.0, 0.0, 0.4, 0.6, 0.3, 0.0, 0.0, 0.6, 0.7
 };
 
 int MAX_COUNT = 479001600; // 12!
@@ -165,24 +325,90 @@ void RoundComputation::fillScore(int** score, int t[12]) {
     }
 }
 
-double RoundComputation::scoreTriad(int a, int b, int c) {
-    // should sound imperfect:
-    int d1 = abs(a - b) % 12;
-    int d2 = abs(a - c) % 12;
-    int d3 = abs(b - c) % 12;
+int RoundComputation::getChord(int a, int b, int c, int& d1, int& d2) {
+    int n0, n1, n2;
+    if (a < b) {
+        if (b < c) {
+            n0 = a;
+            n1 = b;
+            n2 = c;
+        } else {
+            if (a < c) {
+                n0 = a;
+                n2 = b;
+                n1 = c;
+            } else {
+                n1 = a;
+                n2 = b;
+                n0 = c;
+            }
+        }
+    } else {
+        if (a < c) {
+            n1 = a;
+            n0 = b;
+            n2 = c;
+        } else {
+            if (a < b) {
+                n2 = a;
+                n0 = b;
+                n1 = c;
+            } else {
+                n2 = a;
+                n1 = b;
+                n0 = c;
+            }
+        }
+    }
     
-    return rating[d1] + rating[d2] + rating[d3];
+    d1 = n1 - n0;
+    d2 = n2 - n1;
+    
+    return chord(d1, d2);
 }
 
 double RoundComputation::score(int** score) {
     double s = 0.0;
+    int lastChord = 0;
+    int lastD1 = -1;
+    int lastD2 = -1;
+    int lastA, lastB, lastC;
+    int ch, d1, d2;
     for (int i = 0; i < parameters.tickCount; ++i) {
-        s += scoreTriad(score[0][i], score[1][i], score[2][i]);
+        int a = score[0][i];
+        int b = score[1][i];
+        int c = score[2][i];
+        int ch = getChord(a, b, c, d1, d2);
+        if (ch != lastChord) {
+            s += (1.0 / abs(ch - lastChord))*2.0;
+        } else {
+            s += 1.0 - parameters.tickWeight[i];
+        }
+        if (d1 == lastD1) {
+            s -= parallel[d1];
+        }
+        if (d2 == lastD2) {
+            s -= parallel[d2];
+        }
+        
+        int sA = sign(a - lastA);
+        int sB = sign(b - lastB);
+        int sC = sign(c - lastC);
+        if (i > 0 && sA == sB && sB == sC) {
+            s -= 0.1;
+        }
+        
+        lastChord = ch;
+        lastD1 = d1;
+        lastD2 = d2;
+        lastA = a;
+        lastB = b;
+        lastC = c;
     }
     return s;
 }
 
-void RoundComputation::processSubSeries(int nr, ComputationChunk& chunk, int baseProgress, const Thread& thread) {
+void RoundComputation::processSubSeries(int nr, ComputationChunk& chunk, int baseProgress, const Thread& thread, std::priority_queue<Series>& bestSeries) {
     int** s = parameters.allocateEmptyScore();
     int series[12];
     series[0] = nr;
@@ -197,9 +423,14 @@ void RoundComputation::processSubSeries(int nr, ComputationChunk& chunk, int bas
         fillScore(s, series);
         
         double sc = score(s);
-        if (sc > bestScore) {
-            bestScore = sc;
-            memcpy(bestSeries, series, 12*sizeof(int));
+        if (bestSeries.size() < BEST_N || sc > bestSeries.top().score) {
+            Series s;
+            s.score = sc;
+            memcpy(s.data, series, 12*sizeof(int));
+            bestSeries.push(s);
+            if (bestSeries.size() > BEST_N) {
+                bestSeries.pop();
+            }
         }
         
         if (++c == REPORT_PROGRESS_COUNT) {
@@ -208,14 +439,16 @@ void RoundComputation::processSubSeries(int nr, ComputationChunk& chunk, int bas
             baseProgress += c;
             c = 0;
         }
-    } while (!thread.isCancelled() && std::next_permutation(series+1, series+11));
+    } while (!thread.isCancelled() && std::next_permutation(series+1, series+EXPLORATION_RANGE));
     chunk.setProgress(baseProgress + c);
+    
+    delete s;
 }
 
 void RoundComputation::processChunk(int threadNumber, ComputationChunk& chunk, const Thread& thread) {
     for (int i = 0; i < 12; ++i) {
         if (i % threadCount == threadNumber) {
-            processSubSeries(i, chunk, chunk.getProgress(), thread);
+            processSubSeries(i, chunk, chunk.getProgress(), thread, queues[threadNumber]);
         }
     }
 }

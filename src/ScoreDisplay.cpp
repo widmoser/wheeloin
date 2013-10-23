@@ -31,6 +31,10 @@ void ScoreDisplay::init() {
     renderer.setTextFont("OpenSans-Regular.ttf", 20);
 }
 
+void ScoreDisplay::setScore(Score& score) {
+    this->score = score;
+}
+
 float ScoreDisplay::getAspect() {
     return float(renderer.getDisplayWidth()) / float(renderer.getDisplayHeight());
 }

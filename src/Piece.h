@@ -24,6 +24,8 @@ public:
     void init();
     virtual bool frame();
     
+    void setScore(Score& score);
+    
     WheeloinSynth& getSynth();
     Wheeloin& getInstrument();
     ScoreDisplay& getDisplay();

@@ -20,6 +20,8 @@ public:
     ScoreDisplay(Piece& piece, Score& score);
     void draw();
     void init();
+    
+    void setScore(Score& score);
 private:
     float getAspect();
     

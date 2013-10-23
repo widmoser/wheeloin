@@ -28,6 +28,10 @@ bool Piece::frame() {
     return true;
 }
 
+void Piece::setScore(Score& score) {
+    scoreDisplay.setScore(score);
+}
+
 WheeloinSynth& Piece::getSynth() {
     return synth;
 }
