@@ -36,7 +36,7 @@ public:
     Score();
     Score(const std::string& filename);
     
-    void addNote(Note& n);
+    Note& addNote(Note& n);
     
     const std::vector<Note>& getNotes();
     

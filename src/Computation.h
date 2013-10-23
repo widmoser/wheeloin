@@ -21,9 +21,10 @@ class Computation : public Phase {
 public:
     Computation(System& system, int threadCount);
     virtual ~Computation();
-    void init();
+    virtual void init();
+    virtual void finalize();
     virtual bool frame();
-    void onCancel();
+    virtual void onCancel();
     
     
     virtual void processChunk(int threadNumber, ComputationChunk& runnable, const Thread& thread) = 0;

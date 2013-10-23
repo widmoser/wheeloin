@@ -94,7 +94,7 @@ public:
     
     Score& getScore();
     
-    static void fillScore(Score& score);
+    static Series fillScore(Score& score);
     static void fillScore(Score& score, Parameters& parameters, int series[12]);
     static void computeFragmentedScore(Score& score, Parameters& parameters, int series[12]);
     

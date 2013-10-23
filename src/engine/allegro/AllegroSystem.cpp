@@ -14,15 +14,22 @@ void AllegroSystem::initInput() {
     joystick = new AllegroJoystick(*eventQueue);
 }
 
+void AllegroSystem::initFont() {
+    al_init_font_addon();
+    al_init_ttf_addon();
+}
+
 AllegroSystem::AllegroSystem() {
     al_init();
     initInput();
+    initFont();
     renderer = new AllegroRenderer();
 }
 
 AllegroSystem::AllegroSystem(int width, int height, bool fullscreen) {
     al_init();
     initInput();
+    initFont();
     renderer = new AllegroRenderer(width, height, fullscreen);
 }
 
@@ -31,6 +38,8 @@ AllegroSystem::~AllegroSystem() {
     delete keyboard;
     delete joystick;
     delete eventQueue;
+    al_shutdown_ttf_addon();
+    al_shutdown_font_addon();
     al_uninstall_system();
 }
 

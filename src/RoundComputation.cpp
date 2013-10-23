@@ -83,7 +83,7 @@ int** Parameters::allocateEmptyScore() {
 const int REPORT_PROGRESS_COUNT = 100000;
 const int EXPLORATION_RANGE = 11;
 
-void RoundComputation::fillScore(Score& score) {
+Series RoundComputation::fillScore(Score& score) {
     std::ifstream input("cache");
     int voiceCount;
     double offset;
@@ -98,11 +98,12 @@ void RoundComputation::fillScore(Score& score) {
     for (int i = 0; i < seqIndex; i++) {
         input.ignore(std::numeric_limits<unsigned int>::max(), '\n');
     }
-    double sc;
+    Series res;
     int seq[12];
-    input >> sc >> seq[0] >> seq[1] >> seq[2] >> seq[3] >> seq[4] >> seq[5] >> seq[6] >> seq[7] >> seq[8] >> seq[9] >> seq[10] >> seq[11];
+    input >> res.score >> res.data[0] >> res.data[1] >> res.data[2] >> res.data[3] >> res.data[4] >> res.data[5] >> res.data[6] >> res.data[7] >> res.data[8] >> res.data[9] >> res.data[10] >> res.data[11];
     
     fillScore(score, parameters, seq);
+    return res;
 }
 
 void RoundComputation::fillScore(Score& score, Parameters& parameters, int series[12]) {
@@ -229,22 +230,28 @@ void RoundComputation::initializeChords() {
 }
 
 void RoundComputation::computeFragmentedScore(Score& score, Parameters& parameters, int series[12]) {
-    double time = 10.0;
-    Note bass(1, 24, time, 200.0, 1.0, 1.0);
-    score.addNote(bass);
-    
+    double time = 15.0;
+    Note firstBass(1, rand() % 12 + 26, time, 0.0, 1.0, 1.0);
+    Note& lastBass = score.addNote(firstBass);
     for (int i = 0; i < 100; ++i) {
         int fragmentLength = rand() % 6;
         int fragmentStart = rand() % 12;
         int octave = rand() % 3 + 3;
-        double gap = rand() % 3000 / 1000.0;
+        double gap = rand() % 8 * 0.5;
         
-        for (int j = fragmentStart; j < fragmentStart + fragmentLength; ++j) {
-            int index = j % 12;
-            Note n(1, series[index]+octave*12, time, parameters.noteLengths[index], 1.0, 1.0);
-            score.addNote(n);
-            time += parameters.noteLengths[index] + gap;
+        if (rand() % 10 > 8) {
+            for (int j = fragmentStart; j < fragmentStart + fragmentLength; ++j) {
+                int index = j % 12;
+                Note n(2, series[index]+octave*12, time, parameters.noteLengths[index], 1.0, 1.0);
+                score.addNote(n);
+                time += parameters.noteLengths[index];
+            }
+        } else {
+            lastBass.length = time - lastBass.start;
+            Note n(1, rand() % 12 + 26, time, 0.0, 1.0, 1.0);
+            lastBass = score.addNote(n);
         }
+        time += gap;
     }
 }
 

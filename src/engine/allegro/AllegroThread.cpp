@@ -16,7 +16,6 @@ void* AllegroThread::proc(ALLEGRO_THREAD* thread, void* data) {
 }
 
 AllegroThread::AllegroThread(Runnable& runnable) : Thread(runnable) {
-    thread = al_create_thread(proc, this);
 }
 
 AllegroThread::~AllegroThread() {
@@ -24,6 +23,7 @@ AllegroThread::~AllegroThread() {
 }
 
 void AllegroThread::start() {
+    thread = al_create_thread(proc, this);
     al_start_thread(thread);
 }
 

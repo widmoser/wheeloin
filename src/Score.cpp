@@ -34,8 +34,9 @@ Score::Score(const std::string& filename) : currentNote(0) {
     }
 }
 
-void Score::addNote(Note& n) {
+Note& Score::addNote(Note& n) {
     notes.push_back(n);
+    return notes.back();
 }
 
 const std::vector<Note>& Score::getNotes() {

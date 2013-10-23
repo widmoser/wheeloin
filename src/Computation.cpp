@@ -15,7 +15,6 @@
 #include <engine/allegro/AllegroThread.h>
 
 Computation::Computation(System& system, int threadCount) : Phase(system), renderer(system.getRenderer()), threadCount(threadCount) {
-    renderer.setTextFont("OpenSans-Regular.ttf", 60);
     for (int i = 0; i < threadCount; ++i) {
         ComputationChunk* c = new ComputationChunk(*this, i);
         threads.push_back(new AllegroThread(*c));
@@ -34,9 +33,17 @@ Computation::~Computation() {
 
 void Computation::init() {
     Phase::init();
-    renderer.setTextFont("OpenSans-Regular.ttf", 60);
     for (std::vector<Thread*>::iterator i = threads.begin(); i != threads.end(); ++i) {
         (*i)->start();
+    }
+}
+
+
+void Computation::finalize() {
+    Phase::finalize();
+    for (std::vector<Thread*>::iterator i = threads.begin(); i != threads.end(); ++i) {
+        (*i)->cancel();
+        (*i)->join();
     }
 }
 

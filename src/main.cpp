@@ -39,7 +39,6 @@ int main(int argc, char** argv)
         volatile bool running = true;
         
         AllegroSystem system(1440, 900);
-        system.getRenderer().setTextFont("OpenSans-Regular.ttf", 20);
         system.getRenderer().setTextColor(255, 255, 255);
         
         WheeloinSynth synth;
@@ -64,7 +63,8 @@ int main(int argc, char** argv)
         if (!argInput) {
             phases.push(&computation);
         } else {
-            RoundComputation::fillScore(score1);
+            Series s = RoundComputation::fillScore(score1);
+            RoundComputation::computeFragmentedScore(score2, params, s.data);
         }
         
         phases.push(&pause);

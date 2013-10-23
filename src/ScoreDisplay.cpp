@@ -28,7 +28,6 @@ ScoreDisplay::ScoreDisplay(Piece& piece, Score& score) : piece(piece), system(pi
 }
 
 void ScoreDisplay::init() {
-    renderer.setTextFont("OpenSans-Regular.ttf", 40);
 }
 
 void ScoreDisplay::setScore(Score& score) {

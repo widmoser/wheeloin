@@ -27,6 +27,7 @@ public:
     virtual double getTime();
 private:
     void initInput();
+    void initFont();
     
     AllegroKeyboard* keyboard;
     AllegroJoystick* joystick;

@@ -10,10 +10,6 @@
 #include <Exception.h>
 
 void AllegroRenderer::init(int width, int height, bool fullScreen) {
-    textFont = 0;
-    al_init_font_addon();
-    al_init_ttf_addon();
-    
     int flags = ALLEGRO_OPENGL | ALLEGRO_RESIZABLE;
     if (fullScreen) {
         flags |= ALLEGRO_FULLSCREEN_WINDOW;
@@ -24,6 +20,8 @@ void AllegroRenderer::init(int width, int height, bool fullScreen) {
     if(!display){
         throw Exception("Failed to create display!");
     }
+    
+    textFont = al_load_font("OpenSans-Regular.ttf", 60, 0);
 }
 
 AllegroRenderer::AllegroRenderer(int width, int height, bool fullScreen) {
@@ -37,26 +35,18 @@ AllegroRenderer::AllegroRenderer() {
 }
 
 AllegroRenderer::~AllegroRenderer() {
-    if (textFont)
-        al_destroy_font(textFont);
-    al_shutdown_ttf_addon();
-    al_shutdown_font_addon();
-    //al_destroy_display(display);
+    al_destroy_font(textFont);
+    al_destroy_display(display);
 }
 
 void AllegroRenderer::setTextColor(int r, int g, int b) {
     textColor = al_map_rgb(r, g, b);
 }
 
-void AllegroRenderer::setTextFont(const std::string& file, int size) {
-    if (textFont) {
-        al_destroy_font(textFont);
-    }
-    textFont = al_load_font(file.c_str(), size, 0);
-}
-
 void AllegroRenderer::drawText(float x, float y, const std::string& text) {
-    al_draw_text(textFont, textColor, x, y, ALLEGRO_ALIGN_CENTRE, text.c_str());
+    if (textFont) {
+        al_draw_text(textFont, textColor, x, y, ALLEGRO_ALIGN_CENTRE, text.c_str());
+    }
 }
 
 void AllegroRenderer::updateDisplay() {
