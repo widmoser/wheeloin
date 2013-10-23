@@ -10,6 +10,7 @@
 #include <Exception.h>
 
 void AllegroRenderer::init(int width, int height, bool fullScreen) {
+    textFont = 0;
     al_init_font_addon();
     al_init_ttf_addon();
     
@@ -36,7 +37,8 @@ AllegroRenderer::AllegroRenderer() {
 }
 
 AllegroRenderer::~AllegroRenderer() {
-    //al_destroy_font(textFont);
+    if (textFont)
+        al_destroy_font(textFont);
     al_shutdown_ttf_addon();
     al_shutdown_font_addon();
     //al_destroy_display(display);
@@ -47,6 +49,9 @@ void AllegroRenderer::setTextColor(int r, int g, int b) {
 }
 
 void AllegroRenderer::setTextFont(const std::string& file, int size) {
+    if (textFont) {
+        al_destroy_font(textFont);
+    }
     textFont = al_load_font(file.c_str(), size, 0);
 }
 
