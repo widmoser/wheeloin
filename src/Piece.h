@@ -19,20 +19,21 @@
 
 class Piece : public Phase {
 public:
-    Piece(System& system, Score& score);
+    Piece(const std::string title, System& system, Wheeloin& instrument, Score& score);
     ~Piece();
     void init();
     virtual bool frame();
     
     void setScore(Score& score);
     
-    WheeloinSynth& getSynth();
     Wheeloin& getInstrument();
     ScoreDisplay& getDisplay();
+    
+    const std::string& getTitle();
 private:
-    WheeloinSynth synth;
-    Wheeloin wheeloin;
+    Wheeloin& instrument;
     ScoreDisplay scoreDisplay;
+    std::string title;
 };
 
 #endif /* defined(__steeringwheel__Piece__) */

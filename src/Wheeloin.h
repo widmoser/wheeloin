@@ -29,7 +29,7 @@ public:
 
 class Wheeloin : public EventListener {
 public:
-    Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration, Score& score);
+    Wheeloin(Synthesizer& synth, System& system, WheeloinConfiguration configuration);
     
     void setTriggered(int voice, bool value = true);
     void onButtonDown(int button);
@@ -68,8 +68,6 @@ private:
     
     WheeloinConfiguration conf;
     std::vector<bool> triggered;
-    
-    Score& score;
 };
 
 #endif /* defined(__steeringwheel__Wheeloin__) */

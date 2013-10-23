@@ -41,8 +41,11 @@ public:
     const std::vector<Note>& getNotes();
     
     Note& nextNote();
+    bool hasNextNote();
     void popNote();
     bool noteLeft();
+    
+    double getLength();
     
 private:
     std::vector<Note> notes;

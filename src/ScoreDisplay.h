@@ -22,6 +22,7 @@ public:
     void init();
     
     void setScore(Score& score);
+    Score& getScore();
 private:
     float getAspect();
     
@@ -36,6 +37,7 @@ private:
     void drawGrid();
     void drawNotes();
     void drawCursor();
+    void drawOverlay();
     void drawTextOverlay(float delta);
     
     Wheeloin& instrument;

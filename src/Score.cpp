@@ -47,6 +47,10 @@ Note& Score::nextNote() {
     return notes[currentNote];
 }
 
+bool Score::hasNextNote() {
+    return currentNote < notes.size();
+}
+
 void Score::popNote() {
     currentNote++;
 }
@@ -54,4 +58,12 @@ void Score::popNote() {
 
 bool Score::noteLeft() {
     return currentNote < notes.size();
+}
+
+double Score::getLength() {
+    if (notes.size() > 0) {
+        return notes.back().start + notes.back().length;
+    } else {
+        return 0.0;
+    }
 }

@@ -12,7 +12,8 @@ WheeloinSynth::WheeloinSynth() : StkSynthesizer("./rawwaves"), sample("../sample
     whistle.controlChange(4, 10.0);
     ov.setOverdrive(5.0);
     
-    addInstrument(&round);
+    
     addInstrument(&fmVoices1);
+    addInstrument(&round);
     addInstrument(&fmVoices2);
 }

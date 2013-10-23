@@ -17,6 +17,7 @@
 #include <Score.h>
 #include <Piece.h>
 
+
 class Parameters {
 public:
     Parameters(int voiceCount, double offset, double noteLengths[12]);
@@ -93,6 +94,10 @@ public:
     
     Score& getScore();
     
+    static void fillScore(Score& score);
+    static void fillScore(Score& score, Parameters& parameters, int series[12]);
+    static void computeFragmentedScore(Score& score, Parameters& parameters, int series[12]);
+    
 protected:
     int getNumberOfElements();
     std::string getText(int count);
@@ -106,6 +111,7 @@ private:
     void setChord(int ch, int i, int j);
     void initializeChord(int chord, int i, int j);
     void initializeChords();
+    
     
     void fillSequence(int* seq, int t[12], int offset);
     void fillScore(int** score, int t[12]);
@@ -124,6 +130,8 @@ private:
     
     Score bestScore;
     Piece& next;
+    
+    Score fragmentedScore;
 };
 
 #endif /* defined(__steeringwheel__RoundComputation__) */

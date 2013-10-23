@@ -24,6 +24,15 @@
 using namespace stk;
 using namespace std;
 
+int argContains(int argc, char** argv, const char* option) {
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], option) == 0) {
+            return i;
+        }
+    }
+    return 0;
+}
+
 int main(int argc, char** argv)
 {
     try {
@@ -33,23 +42,40 @@ int main(int argc, char** argv)
         system.getRenderer().setTextFont("OpenSans-Regular.ttf", 20);
         system.getRenderer().setTextColor(255, 255, 255);
         
-        Score score("test.score");
-        Piece piece(system, score);
+        WheeloinSynth synth;
+        Wheeloin instrument(synth, system, WheeloinConfiguration(Scales::MAJOR, 15, 54));
+        
+        Score score1;
+        Piece piece1("I. XII in a round", system, instrument, score1);
+        
+        Score score2;
+        Piece piece2("II. Fragments", system, instrument, score2);
         
         double rythm[12] = {
-          2, 1, 1, 1, 1, 1, 0.5, 0.5, 1, 1, 1, 1
+          4, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2
         };
         Parameters params(3, 4.0, rythm);
-        RoundComputation computation(system, params, 8, piece);
+        RoundComputation computation(system, params, 8, piece1);
         
         Pause pause(system);
         
         std::queue<Phase*> phases;
-        phases.push(&computation);
+        int argInput = argContains(argc, argv, "-i");
+        if (!argInput) {
+            phases.push(&computation);
+        } else {
+            RoundComputation::fillScore(score1);
+        }
+        
         phases.push(&pause);
-        phases.push(&piece);
+        phases.push(&piece2);
+        phases.push(&pause);
+        phases.push(&piece1);
+        phases.push(&pause);
+        phases.push(&piece2);
         
         phases.front()->init();
+        synth.start();
         while (running) {
             system.updateInput();
             if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE)) {
@@ -69,6 +95,7 @@ int main(int argc, char** argv)
                 system.getRenderer().updateDisplay();
             }
         }
+        synth.stop();
         
         return 0;
     } catch (Exception e) {

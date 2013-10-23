@@ -28,11 +28,15 @@ ScoreDisplay::ScoreDisplay(Piece& piece, Score& score) : piece(piece), system(pi
 }
 
 void ScoreDisplay::init() {
-    renderer.setTextFont("OpenSans-Regular.ttf", 20);
+    renderer.setTextFont("OpenSans-Regular.ttf", 40);
 }
 
 void ScoreDisplay::setScore(Score& score) {
     this->score = score;
+}
+
+Score& ScoreDisplay::getScore() {
+    return score;
 }
 
 float ScoreDisplay::getAspect() {
@@ -101,34 +105,66 @@ void ScoreDisplay::drawGrid() {
 
 void ScoreDisplay::drawNotes() {
     const std::vector<Note> notes = score.getNotes();
-    glBegin(GL_QUADS);
+    
     for (std::vector<Note>::const_iterator i = notes.begin(); i != notes.end(); ++i) {
         Note n = *i;
-        glColor4f(voiceColors[n.voice][0], voiceColors[n.voice][1], voiceColors[n.voice][2], n.activated ? 1.0f : 0.35f);
+        
         bool accidental = false;
         int scaleNote = instrument.getConfiguration().scale.getScaleNote(n.value, accidental);
-        glVertex3f((scaleNote - float(n.startVolume)*0.5f)*gridWidth, 0.0f, float(-n.start));
-        glVertex3f((scaleNote + float(n.startVolume)*0.5f)*gridWidth, 0.0f, float(-n.start));
-        glVertex3f((scaleNote + float(n.endVolume)*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
-        glVertex3f((scaleNote - float(n.endVolume)*0.5f)*gridWidth, 0.0f, float(-n.start - n.length));
+        
+        float alpha = n.activated ? 1.0f : 0.35f;
+        float w = float(n.startVolume)*0.5f;
+        float l = (scaleNote - w)*gridWidth;
+        float r = (scaleNote + w)*gridWidth;
+        float s = float(-n.start);
+        float e = float(-n.start - n.length);
+        
+        if (!accidental) {
+            glBegin(GL_TRIANGLE_STRIP);
+            glColor4f(1.0f, 1.0f, 1.0f, alpha);
+            glVertex3f(l, 0.0f, s);
+            glVertex3f(r, 0.0f, s);
+            glVertex3f(l, 0.0f, s-0.1f);
+            glVertex3f(r, 0.0f, s-0.1f);
+            glEnd();
+        } else {
+            glBegin(GL_TRIANGLES);
+            glColor4f(1.0f, 1.0f, 1.0f, alpha);
+            glVertex3f(l, 0.0f, s);
+            glVertex3f(r, 0.0f, s);
+            glVertex3f((l+r)*0.5f, 0.0f, s-0.1f);
+            glEnd();
+        }
+        
+        glBegin(GL_TRIANGLE_STRIP);
+//        glColor4f(1.0f, 1.0f, 1.0f, 0.35f);
+//        glVertex3f(l, 0.3f, s);
+//        glVertex3f(r, 0.3f, s);
+        glColor4f(voiceColors[n.voice][0], voiceColors[n.voice][1], voiceColors[n.voice][2], alpha);
+        glVertex3f(l, 0.0f, s-0.1f);
+        glVertex3f(r, 0.0f, s-0.1f);
+        glVertex3f(l, 0.0f, e);
+        glVertex3f(r, 0.0f, e);
+        glEnd();
     }
-    glEnd();
 }
 
-void ScoreDisplay::drawCursor() {
-    Note& n = score.nextNote();
-    int note = int(round(instrument.getInputScaleNote()));
-    bool accidental = false;
-    float dist = float(system.getTime() - score.nextNote().start);
+void ScoreDisplay::drawCursor() {    
     float r = voiceColors[instrument.getActiveVoice()][0];
     float g = voiceColors[instrument.getActiveVoice()][1];
     float b = voiceColors[instrument.getActiveVoice()][2];
-    int nextScaleNote = instrument.getConfiguration().scale.getScaleNote(n.value, accidental);
-    if (fabsf(dist) < 0.1f && note == nextScaleNote && instrument.getActiveVoice() == n.voice) {
-        float relDist = 1.0f - fabsf(dist)*10.0f;
-        r = (1.0f - r)*relDist + r;
-        g = (1.0f - g)*relDist + g;
-        b = (1.0f - b)*relDist + b;
+    bool accidental = false;
+    if (score.hasNextNote()) {
+        Note& n = score.nextNote();
+        int note = int(round(instrument.getInputScaleNote()));
+        float dist = float(system.getTime() - score.nextNote().start);
+        int nextScaleNote = instrument.getConfiguration().scale.getScaleNote(n.value, accidental);
+        if (fabsf(dist) < 0.1f && note == nextScaleNote && instrument.getActiveVoice() == n.voice) {
+            float relDist = 1.0f - fabsf(dist)*10.0f;
+            r = (1.0f - r)*relDist + r;
+            g = (1.0f - g)*relDist + g;
+            b = (1.0f - b)*relDist + b;
+        }
     }
     glColor3f(r, g, b);
     float radius = 0.5f*gridWidth*float(instrument.getVolume());
@@ -168,6 +204,30 @@ void ScoreDisplay::draw() {
     
     drawTextOverlay(float(piece.getTime()) - position);
     position = float(piece.getTime());
+    
+    drawOverlay();
+}
+
+
+void ScoreDisplay::drawOverlay() {
+    if (piece.getTime() > score.getLength()) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0.0, 1.0, 1.0, 0.0, -1.0, 10.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glDisable(GL_CULL_FACE);
+        
+        float diff = float(piece.getTime() - score.getLength());
+        float alpha = diff*0.2f;
+        glColor4f(0.0f, 0.0f, 0.0f, alpha);
+        glBegin(GL_TRIANGLE_STRIP);
+        glVertex3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(1.0f, 0.0f, 0.0f);
+        glEnd();
+    }
 }
 
 void ScoreDisplay::drawTextOverlay(float delta) {
@@ -181,8 +241,20 @@ void ScoreDisplay::drawTextOverlay(float delta) {
     std::stringstream text;
     std::stringstream text2;
     
-    text << "Group: " << instrument.getActiveVoice() << " " << system.getTime() << " FPS: " << 1.0f / delta;
-    text2 << instrument.getVolume() << " " << instrument.getInputScaleNote() << " " << getNoteName(instrument.getInputNote());
-    renderer.drawText(50, 50, text.str());
-    renderer.drawText(50, 100, text2.str());
+//    text << "Group: " << instrument.getActiveVoice() << " " << system.getTime() << " FPS: " << 1.0f / delta;
+//    text2 << instrument.getVolume() << " " << instrument.getInputScaleNote() << " " << getNoteName(instrument.getInputNote());
+//    renderer.setTextColor(255, 255, 255);
+//    renderer.drawText(50, 50, text.str());
+//    renderer.drawText(50, 100, text2.str());
+    
+    double t = piece.getTime();
+    if (t < 1.0) {
+        renderer.setTextColor(int(t*255), int(t*255), int(t*255));
+    } else if (t >= 2.0 && t < 3.0) {
+        renderer.setTextColor((3.0 - t)*255, (3.0 - t)*255, (3.0 - t)*255);
+    }
+    
+    if (t < 3.0) {
+        renderer.drawText(renderer.getDisplayWidth()*0.5f, renderer.getDisplayHeight()*0.5f, piece.getTitle());
+    }
 }

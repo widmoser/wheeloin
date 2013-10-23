@@ -83,11 +83,64 @@ int** Parameters::allocateEmptyScore() {
 const int REPORT_PROGRESS_COUNT = 100000;
 const int EXPLORATION_RANGE = 11;
 
-RoundComputation::RoundComputation(System& system, Parameters& parameters, int threads, Piece& next) : Computation(system, threads), parameters(parameters), queues(threads), result(BEST_N), next(next) {
+void RoundComputation::fillScore(Score& score) {
+    std::ifstream input("cache");
+    int voiceCount;
+    double offset;
+    double l[12];
+    
+    int seqCount;
+    
+    input >> seqCount;
+    input >> voiceCount >> offset >> l[0] >> l[1] >> l[2] >> l[3] >> l[4] >> l[5] >> l[6] >> l[7] >> l[8] >> l[9] >> l[10] >> l[11];
+    Parameters parameters(voiceCount, offset, l);
+    int seqIndex = rand() % seqCount;
+    for (int i = 0; i < seqIndex; i++) {
+        input.ignore(std::numeric_limits<unsigned int>::max(), '\n');
+    }
+    double sc;
+    int seq[12];
+    input >> sc >> seq[0] >> seq[1] >> seq[2] >> seq[3] >> seq[4] >> seq[5] >> seq[6] >> seq[7] >> seq[8] >> seq[9] >> seq[10] >> seq[11];
+    
+    fillScore(score, parameters, seq);
+}
+
+void RoundComputation::fillScore(Score& score, Parameters& parameters, int series[12]) {
+    double time = 5.0;
+    for (int i = 0; i < 12; ++i) {
+        Note n(0, series[i]+48, time, parameters.noteLengths[i], 1.0, 1.0);
+        score.addNote(n);
+        time += parameters.noteLengths[i];
+    }
+    
+    time += 8.0;
+    for (int i = 0; i < 12; ++i) {
+        Note n(1, series[i]+48, time, parameters.noteLengths[i], 1.0, 1.0);
+        score.addNote(n);
+        time += parameters.noteLengths[i];
+    }
+    
+    for (int i = 0; i < 12; ++i) {
+        Note n(1, series[i]+60, time, parameters.noteLengths[i], 1.0, 1.0);
+        score.addNote(n);
+        time += parameters.noteLengths[i];
+    }
+    
+    for (int i = 0; i < 12; ++i) {
+        Note n(1, series[i]+36, time, parameters.noteLengths[i], 1.0, 1.0);
+        score.addNote(n);
+        time += parameters.noteLengths[i];
+    }
+}
+
+RoundComputation::RoundComputation(System& system, Parameters& parameters, int threads, Piece& next) : Computation(system, threads), parameters(parameters), queues(threads), result(BEST_N), next(next), chords(0) {
 }
 
 RoundComputation::~RoundComputation() {
-    delete chords;
+    if (chords) {
+        delete chords;
+        chords = 0;
+    }
 }
 
 void RoundComputation::printNoteOff(std::ostream& out, double delta, int voice, int note) {
@@ -175,6 +228,26 @@ void RoundComputation::initializeChords() {
     }
 }
 
+void RoundComputation::computeFragmentedScore(Score& score, Parameters& parameters, int series[12]) {
+    double time = 10.0;
+    Note bass(1, 24, time, 200.0, 1.0, 1.0);
+    score.addNote(bass);
+    
+    for (int i = 0; i < 100; ++i) {
+        int fragmentLength = rand() % 6;
+        int fragmentStart = rand() % 12;
+        int octave = rand() % 3 + 3;
+        double gap = rand() % 3000 / 1000.0;
+        
+        for (int j = fragmentStart; j < fragmentStart + fragmentLength; ++j) {
+            int index = j % 12;
+            Note n(1, series[index]+octave*12, time, parameters.noteLengths[index], 1.0, 1.0);
+            score.addNote(n);
+            time += parameters.noteLengths[index] + gap;
+        }
+    }
+}
+
 Series RoundComputation::popMin() {
     typedef std::vector<std::priority_queue<Series> >::iterator iter;
     double min = std::numeric_limits<double>::max();
@@ -225,13 +298,7 @@ void RoundComputation::finalize() {
     }
     
     int* resultSequence = result.back().data;
-    
-    double time = 0.0;
-    for (int i = 0; i < 12; ++i) {
-        Note n(0, resultSequence[i]+48, time, parameters.noteLengths[i], 1.0, 1.0);
-        bestScore.addNote(n);
-        time += parameters.noteLengths[i];
-    }
+    fillScore(bestScore, parameters, resultSequence);
     
     // output file
     std::ofstream out("score.ski");
@@ -273,6 +340,18 @@ void RoundComputation::finalize() {
     
     delete chords;
     
+    std::ofstream cache("cache");
+    cache << result.size() << std::endl;
+    cache << parameters.voiceCount << " " << parameters.offset;
+    for (int i = 0; i < 12; ++i) {
+        cache << " " << parameters.noteLengths[i];
+    }
+    for (std::vector<Series>::iterator i = result.begin(); i != result.end(); ++i) {
+        cache << std::endl << i->score;
+        for (int j = 0; j < 12; ++j) {
+            cache << " " << i->data[j];
+        }
+    }
     
     next.setScore(bestScore);
 }

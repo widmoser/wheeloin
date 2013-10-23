@@ -8,12 +8,10 @@
 
 #include "Piece.h"
 
-Piece::Piece(System& system, Score& score) : Phase(system), wheeloin(synth, system, WheeloinConfiguration(Scales::MAJOR, 15, 54), score), scoreDisplay(*this, score) {
-    synth.start();
+Piece::Piece(const std::string title, System& system, Wheeloin& instrument, Score& score) : Phase(system), instrument(instrument), scoreDisplay(*this, score), title(title) {
 }
 
 Piece::~Piece() {
-    synth.stop();
 }
 
 
@@ -23,23 +21,23 @@ void Piece::init() {
 }
 
 bool Piece::frame() {
-    wheeloin.processInput();
+    instrument.processInput();
     scoreDisplay.draw();
-    return true;
+    return getTime() < scoreDisplay.getScore().getLength() + 5.0;
 }
 
 void Piece::setScore(Score& score) {
     scoreDisplay.setScore(score);
 }
 
-WheeloinSynth& Piece::getSynth() {
-    return synth;
-}
-
 Wheeloin& Piece::getInstrument() {
-    return wheeloin;
+    return instrument;
 }
 
 ScoreDisplay& Piece::getDisplay() {
     return scoreDisplay;
+}
+
+const std::string& Piece::getTitle() {
+    return title;
 }
