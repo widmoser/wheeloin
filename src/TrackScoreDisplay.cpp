@@ -134,9 +134,9 @@ void TrackScoreDisplay::drawTextOverlay(float delta) {
     text << "Group: " << instrument.getActiveVoice() << " " << system.getTime() << " FPS: " << 1.0f / delta;
     text2 << instrument.getVolume() << " " << instrument.getInputScaleNote() << " " << getNoteName(instrument.getInputNote());
     display << "(" << renderer.getDisplayWidth() << ", " << renderer.getDisplayHeight() << ")";
-    renderer.drawText(50, 50, text.str());
-    renderer.drawText(50, 100, text2.str());
-    renderer.drawText(50, 150, display.str());
+    renderer.drawText(50, 50, text.str(), 60);
+    renderer.drawText(50, 100, text2.str(), 60);
+    renderer.drawText(50, 150, display.str(), 60);
 }
 
 float TrackScoreDisplay::getAngle(int note) {

@@ -16,7 +16,7 @@ class Renderer {
 public:
     
     virtual void setTextColor(int r, int g, int b) = 0;
-    virtual void drawText(float x, float y, const std::string& text) = 0;
+    virtual void drawText(float x, float y, const std::string& text, int size) = 0;
     
     virtual int getDisplayWidth() = 0;
     virtual int getDisplayHeight() = 0;

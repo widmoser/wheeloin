@@ -1,0 +1,252 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D1AC9C621817227C00A51020 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D1AC9C611817227C00A51020 /* main.cpp */; };
+		D1AC9C641817227C00A51020 /* SkiniPlayer.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D1AC9C631817227C00A51020 /* SkiniPlayer.1 */; };
+		D1AC9C72181722B600A51020 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1AC9C70181722B600A51020 /* CoreAudio.framework */; };
+		D1AC9C73181722B600A51020 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1AC9C71181722B600A51020 /* CoreFoundation.framework */; };
+		D1AC9C75181722F800A51020 /* libstk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1AC9C74181722F800A51020 /* libstk.a */; };
+		D1AC9C771817237A00A51020 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1AC9C761817237A00A51020 /* CoreMIDI.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D1AC9C5C1817227C00A51020 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				D1AC9C641817227C00A51020 /* SkiniPlayer.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		D1AC9C5E1817227C00A51020 /* SkiniPlayer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SkiniPlayer; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1AC9C611817227C00A51020 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		D1AC9C631817227C00A51020 /* SkiniPlayer.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = SkiniPlayer.1; sourceTree = "<group>"; };
+		D1AC9C70181722B600A51020 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		D1AC9C71181722B600A51020 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		D1AC9C74181722F800A51020 /* libstk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstk.a; path = "../../stk-4.4.4/src/libstk.a"; sourceTree = "<group>"; };
+		D1AC9C761817237A00A51020 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
+		D1F1D253181843C20088B672 /* SynthInstrument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynthInstrument.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D1AC9C5B1817227C00A51020 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1AC9C771817237A00A51020 /* CoreMIDI.framework in Frameworks */,
+				D1AC9C75181722F800A51020 /* libstk.a in Frameworks */,
+				D1AC9C72181722B600A51020 /* CoreAudio.framework in Frameworks */,
+				D1AC9C73181722B600A51020 /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D1AC9C551817227C00A51020 = {
+			isa = PBXGroup;
+			children = (
+				D1AC9C761817237A00A51020 /* CoreMIDI.framework */,
+				D1AC9C74181722F800A51020 /* libstk.a */,
+				D1AC9C70181722B600A51020 /* CoreAudio.framework */,
+				D1AC9C71181722B600A51020 /* CoreFoundation.framework */,
+				D1AC9C601817227C00A51020 /* SkiniPlayer */,
+				D1AC9C5F1817227C00A51020 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D1AC9C5F1817227C00A51020 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D1AC9C5E1817227C00A51020 /* SkiniPlayer */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D1AC9C601817227C00A51020 /* SkiniPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				D1AC9C611817227C00A51020 /* main.cpp */,
+				D1AC9C631817227C00A51020 /* SkiniPlayer.1 */,
+				D1F1D253181843C20088B672 /* SynthInstrument.h */,
+			);
+			path = SkiniPlayer;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D1AC9C5D1817227C00A51020 /* SkiniPlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D1AC9C671817227C00A51020 /* Build configuration list for PBXNativeTarget "SkiniPlayer" */;
+			buildPhases = (
+				D1AC9C5A1817227C00A51020 /* Sources */,
+				D1AC9C5B1817227C00A51020 /* Frameworks */,
+				D1AC9C5C1817227C00A51020 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SkiniPlayer;
+			productName = SkiniPlayer;
+			productReference = D1AC9C5E1817227C00A51020 /* SkiniPlayer */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D1AC9C561817227C00A51020 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Hannes Widmoser";
+			};
+			buildConfigurationList = D1AC9C591817227C00A51020 /* Build configuration list for PBXProject "SkiniPlayer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D1AC9C551817227C00A51020;
+			productRefGroup = D1AC9C5F1817227C00A51020 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D1AC9C5D1817227C00A51020 /* SkiniPlayer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D1AC9C5A1817227C00A51020 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1AC9C621817227C00A51020 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D1AC9C651817227C00A51020 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D1AC9C661817227C00A51020 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		D1AC9C681817227C00A51020 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = "../../stk-4.4.4/include";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../stk-4.4.4/src\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D1AC9C691817227C00A51020 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = "../../stk-4.4.4/include";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../stk-4.4.4/src\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D1AC9C591817227C00A51020 /* Build configuration list for PBXProject "SkiniPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1AC9C651817227C00A51020 /* Debug */,
+				D1AC9C661817227C00A51020 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D1AC9C671817227C00A51020 /* Build configuration list for PBXNativeTarget "SkiniPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D1AC9C681817227C00A51020 /* Debug */,
+				D1AC9C691817227C00A51020 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D1AC9C561817227C00A51020 /* Project object */;
+}

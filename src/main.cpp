@@ -5,9 +5,7 @@
 #include <sstream>
 #include <cmath>
 
-#include <SDL2/SDL.h>
-
-#include "engine/allegro/AllegroSystem.h"
+#include "engine/sfml/SFMLSystem.h"
 #include "engine/Keyboard.h"
 #include "engine/Joystick.h"
 #include <TrackScoreDisplay.h>
@@ -38,10 +36,13 @@ int main(int argc, char** argv)
     try {
         volatile bool running = true;
         
-        AllegroSystem system(1440, 900);
+        SFMLSystem system(1440, 900);
         system.getRenderer().setTextColor(255, 255, 255);
+
         
+        std::cout << "1" << std::endl;
         WheeloinSynth synth;
+        std::cout << "2" << std::endl;
         Wheeloin instrument(synth, system, WheeloinConfiguration(Scales::MAJOR, 15, 54));
         
         Score score1;
@@ -64,21 +65,18 @@ int main(int argc, char** argv)
             phases.push(&computation);
         } else {
             Series s = RoundComputation::fillScore(score1);
-            RoundComputation::computeFragmentedScore(score2, params, s.data);
+            //RoundComputation::computeFragmentedScore(score2, params, s.data);
         }
         
         phases.push(&pause);
         phases.push(&piece2);
-        phases.push(&pause);
         phases.push(&piece1);
-        phases.push(&pause);
-        phases.push(&piece2);
-        
+
         phases.front()->init();
         synth.start();
         while (running) {
             system.updateInput();
-            if (system.getKeyboard().isButtonDown(ALLEGRO_KEY_ESCAPE)) {
+            if (system.getKeyboard().isButtonDown(sf::Keyboard::Escape)) {
                 running = false;
                 phases.front()->onCancel();
             } else {

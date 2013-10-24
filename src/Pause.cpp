@@ -10,7 +10,7 @@
 
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
-
+#include <SFML/Window/Keyboard.hpp>
 
 Pause::Pause(System& system) : Phase(system), system(system) {
     
@@ -40,9 +40,9 @@ bool Pause::frame() {
     glLoadIdentity();
     glDisable(GL_CULL_FACE);
     
-    system.getRenderer().drawText(w*0.5f, h*0.5f, "Press SPACE to continue...");
+    system.getRenderer().drawText(w*0.5f, h*0.5f, "Press SPACE to continue...", 60);
     
-    if (system.getKeyboard().isButtonDown(75)) {
+    if (system.getKeyboard().isButtonDown(sf::Keyboard::Space)) {
         // space:
         return false;
     } else {

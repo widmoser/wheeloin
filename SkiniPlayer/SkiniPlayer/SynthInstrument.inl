@@ -1,0 +1,10 @@
+//
+//  SynthInstrument.cpp
+//  SkiniPlayer
+//
+//  Created by Hannes Widmoser on 10/23/13.
+//  Copyright (c) 2013 Hannes Widmoser. All rights reserved.
+//
+
+#include "SynthInstrument.h"
+

@@ -43,7 +43,7 @@ void AllegroRenderer::setTextColor(int r, int g, int b) {
     textColor = al_map_rgb(r, g, b);
 }
 
-void AllegroRenderer::drawText(float x, float y, const std::string& text) {
+void AllegroRenderer::drawText(float x, float y, const std::string& text, int size) {
     if (textFont) {
         al_draw_text(textFont, textColor, x, y, ALLEGRO_ALIGN_CENTRE, text.c_str());
     }

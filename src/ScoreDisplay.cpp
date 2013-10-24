@@ -66,15 +66,18 @@ void ScoreDisplay::setView() {
 
 void ScoreDisplay::processInput() {
     if (system.getJoystick().isButtonDown(0) || system.getJoystick().isButtonDown(1)) {
-        Note& n = score.nextNote();
+        
         int note = instrument.getInputNote();
         if (system.getJoystick().isButtonDown(0)) {
             note += 1;
         }
-        if (note == n.value && instrument.getActiveVoice() == n.voice) {
-            if (!n.activated) {
-                n.activated = true;
-                score.popNote();
+        if (score.hasNextNote()) {
+            Note& n = score.nextNote();
+            if (note == n.value && instrument.getActiveVoice() == n.voice) {
+                if (!n.activated) {
+                    n.activated = true;
+                    score.popNote();
+                }
             }
         }
     }
@@ -237,15 +240,6 @@ void ScoreDisplay::drawTextOverlay(float delta) {
     glLoadIdentity();
     glDisable(GL_CULL_FACE);
     
-    std::stringstream text;
-    std::stringstream text2;
-    
-//    text << "Group: " << instrument.getActiveVoice() << " " << system.getTime() << " FPS: " << 1.0f / delta;
-//    text2 << instrument.getVolume() << " " << instrument.getInputScaleNote() << " " << getNoteName(instrument.getInputNote());
-//    renderer.setTextColor(255, 255, 255);
-//    renderer.drawText(50, 50, text.str());
-//    renderer.drawText(50, 100, text2.str());
-    
     double t = piece.getTime();
     if (t < 1.0) {
         renderer.setTextColor(int(t*255), int(t*255), int(t*255));
@@ -254,6 +248,6 @@ void ScoreDisplay::drawTextOverlay(float delta) {
     }
     
     if (t < 3.0) {
-        renderer.drawText(renderer.getDisplayWidth()*0.5f, renderer.getDisplayHeight()*0.5f, piece.getTitle());
+        renderer.drawText(renderer.getDisplayWidth()*0.5f, renderer.getDisplayHeight()*0.5f, piece.getTitle(), 60);
     }
 }

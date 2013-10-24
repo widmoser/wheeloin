@@ -23,7 +23,7 @@ public:
     ~AllegroRenderer();
     
     virtual void setTextColor(int r, int g, int b);
-    virtual void drawText(float x, float y, const std::string& text);
+    virtual void drawText(float x, float y, const std::string& text, int size);
     virtual void updateDisplay();
     
     virtual int getDisplayWidth();

@@ -12,12 +12,12 @@
 #include <sstream>
 #include <iomanip>
 
-#include <engine/allegro/AllegroThread.h>
+#include <engine/sfml/SFMLThread.h>
 
 Computation::Computation(System& system, int threadCount) : Phase(system), renderer(system.getRenderer()), threadCount(threadCount) {
     for (int i = 0; i < threadCount; ++i) {
         ComputationChunk* c = new ComputationChunk(*this, i);
-        threads.push_back(new AllegroThread(*c));
+        threads.push_back(new SFMLThread(*c));
         chunks.push_back(c);
     }
 }
@@ -108,12 +108,12 @@ void Computation::draw(int elements) {
     glLoadIdentity();
     glDisable(GL_CULL_FACE);
 
-    renderer.drawText(renderer.getDisplayWidth()*0.5f, 300, getText(elements));
+    renderer.drawText(renderer.getDisplayWidth()*0.5f, 250, getText(elements), 60);
     
     std::stringstream clock;
     double time = getTime();
     int minutes = int(time / 60.0);
     int seconds = time - minutes*60;
     clock << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0') << seconds;
-    renderer.drawText(renderer.getDisplayWidth()*0.5f, renderer.getDisplayHeight()*0.5f + 100, clock.str());
+    renderer.drawText(renderer.getDisplayWidth()*0.5f, renderer.getDisplayHeight()*0.5f + 100, clock.str(), 60);
 }
