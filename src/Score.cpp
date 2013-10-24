@@ -18,7 +18,7 @@
 Note::Note(int voice, int value, double start, double length, double startVolume, double endVolume) : voice(voice), value(value), start(start), length(length), startVolume(startVolume), endVolume(endVolume), activated(false) {
 }
 
-Note::Note(const Note& n) : voice(n.voice), value(n.value), start(n.start), length(n.length), startVolume(n.startVolume), endVolume(n.endVolume) {}
+Note::Note(const Note& n) : voice(n.voice), value(n.value), start(n.start), length(n.length), startVolume(n.startVolume), endVolume(n.endVolume), activated(n.activated) {}
 
 Score::Score() : currentNote(0) {
     

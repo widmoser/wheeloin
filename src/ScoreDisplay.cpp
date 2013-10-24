@@ -71,7 +71,7 @@ void ScoreDisplay::processInput() {
         if (system.getJoystick().isButtonDown(0)) {
             note += 1;
         }
-        //if (score.hasNextNote()) {
+        if (score.hasNextNote()) {
             Note& n = score.nextNote();
             if (note == n.value && instrument.getActiveVoice() == n.voice) {
                 if (!n.activated) {
@@ -79,7 +79,7 @@ void ScoreDisplay::processInput() {
                     score.popNote();
                 }
             }
-        //}
+        }
     }
 }
 
@@ -106,7 +106,7 @@ void ScoreDisplay::drawGrid() {
 }
 
 void ScoreDisplay::drawNotes() {
-    const std::vector<Note> notes = score.getNotes();
+    const std::vector<Note>& notes = score.getNotes();
     
     for (std::vector<Note>::const_iterator i = notes.begin(); i != notes.end(); ++i) {
         Note n = *i;
@@ -159,7 +159,7 @@ void ScoreDisplay::drawCursor() {
     if (score.hasNextNote()) {
         Note& n = score.nextNote();
         int note = int(round(instrument.getInputScaleNote()));
-        float dist = float(system.getTime() - score.nextNote().start);
+        float dist = float(piece.getTime() - score.nextNote().start);
         int nextScaleNote = instrument.getConfiguration().scale.getScaleNote(n.value, accidental);
         if (fabsf(dist) < 0.1f && note == nextScaleNote && instrument.getActiveVoice() == n.voice) {
             float relDist = 1.0f - fabsf(dist)*10.0f;

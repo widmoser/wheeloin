@@ -27,9 +27,10 @@ public:
     virtual double getTime();
 private:
     SFMLKeyboard keyboard;
-    SFMLJoystick joystick;
+    Joystick* joystick;
     SFMLRenderer renderer;
     
+    bool fakeJoystick;
     sf::Clock clock;
 };
 

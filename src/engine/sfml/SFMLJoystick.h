@@ -14,6 +14,7 @@
 
 class SFMLJoystick : public Joystick {
 public:
+    SFMLJoystick();
     virtual bool isButtonDown(int button);
     virtual void update();
     virtual float getAxis(int axis);

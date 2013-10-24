@@ -9,6 +9,8 @@
 #include "SFMLJoystick.h"
 #include <SFML/Window/Joystick.hpp>
 
+SFMLJoystick::SFMLJoystick() {}
+
 bool SFMLJoystick::isButtonDown(int button) {
     return sf::Joystick::isButtonPressed(0, button);
 }
