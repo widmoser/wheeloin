@@ -21,6 +21,8 @@ public:
     Note(int voice, int value, double start, double length, double startVolume, double endVolume);
     Note() : activated(false) {}
     
+    Note(const Note& n);
+    
     int voice;
     int value;
     double start;
@@ -36,16 +38,18 @@ public:
     Score();
     Score(const std::string& filename);
     
-    Note& addNote(Note& n);
+    void addNote(Note& n);
     
     const std::vector<Note>& getNotes();
     
+    Note& getNote(int index);
     Note& nextNote();
     bool hasNextNote();
     void popNote();
     bool noteLeft();
     
     double getLength();
+    int size();
     
 private:
     std::vector<Note> notes;

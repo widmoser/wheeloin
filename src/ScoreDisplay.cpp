@@ -71,7 +71,7 @@ void ScoreDisplay::processInput() {
         if (system.getJoystick().isButtonDown(0)) {
             note += 1;
         }
-        if (score.hasNextNote()) {
+        //if (score.hasNextNote()) {
             Note& n = score.nextNote();
             if (note == n.value && instrument.getActiveVoice() == n.voice) {
                 if (!n.activated) {
@@ -79,7 +79,7 @@ void ScoreDisplay::processInput() {
                     score.popNote();
                 }
             }
-        }
+        //}
     }
 }
 

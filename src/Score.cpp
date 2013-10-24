@@ -18,6 +18,8 @@
 Note::Note(int voice, int value, double start, double length, double startVolume, double endVolume) : voice(voice), value(value), start(start), length(length), startVolume(startVolume), endVolume(endVolume), activated(false) {
 }
 
+Note::Note(const Note& n) : voice(n.voice), value(n.value), start(n.start), length(n.length), startVolume(n.startVolume), endVolume(n.endVolume) {}
+
 Score::Score() : currentNote(0) {
     
 }
@@ -34,13 +36,16 @@ Score::Score(const std::string& filename) : currentNote(0) {
     }
 }
 
-Note& Score::addNote(Note& n) {
+void Score::addNote(Note& n) {
     notes.push_back(n);
-    return notes.back();
 }
 
 const std::vector<Note>& Score::getNotes() {
     return notes;
+}
+
+Note& Score::getNote(int index) {
+    return notes[index];
 }
 
 Note& Score::nextNote() {
@@ -56,7 +61,6 @@ void Score::popNote() {
     currentNote++;
 }
 
-
 bool Score::noteLeft() {
     return currentNote < notes.size();
 }
@@ -67,4 +71,8 @@ double Score::getLength() {
     } else {
         return 0.0;
     }
+}
+
+int Score::size() {
+    return notes.size();
 }

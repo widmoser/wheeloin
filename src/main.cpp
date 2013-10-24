@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     try {
         volatile bool running = true;
         
-        SFMLSystem system(1440, 900);
+        SFMLSystem system(1440, 900, true);
         system.getRenderer().setTextColor(255, 255, 255);
 
         
@@ -65,13 +65,15 @@ int main(int argc, char** argv)
             phases.push(&computation);
         } else {
             Series s = RoundComputation::fillScore(score1);
-            //RoundComputation::computeFragmentedScore(score2, params, s.data);
+            RoundComputation::computeFragmentedScore(score2, params, s.data);
         }
         
+        
+        phases.push(&pause);
+        phases.push(&piece1);
         phases.push(&pause);
         phases.push(&piece2);
-        phases.push(&piece1);
-
+      
         phases.front()->init();
         synth.start();
         while (running) {
